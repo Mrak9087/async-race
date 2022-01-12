@@ -13,11 +13,19 @@ const stylesHandler = isProduction ? MiniCssExtractPlugin.loader : 'style-loader
 
 const config = {
     entry: './src/index.ts',
+    devtool: 'source-map',
     output: {
         path: path.resolve(__dirname, 'dist'),
+        filename: 'bundle.js',
+        assetModuleFilename: 'assets/[name]-[hash].[ext]',
+        clean: true,
     },
     devServer: {
-        open: true,
+        open: {
+            app: {
+              name: 'chrome',
+            },
+          },
         host: 'localhost',
     },
     plugins: [

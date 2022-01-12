@@ -1,6 +1,7 @@
-import {Garage} from './garage/garage';
-console.log('Hello World!');
-
+import { Garage } from './garage/garage';
 
 const garage = new Garage();
+garage.init()
+
+document.body.append(garage.node)
 garage.render();

@@ -1,5 +1,5 @@
-export type TCar ={
-    name: string,
-    color: string,
-    id: number,
-}
+export type TCar = {
+    name: string;
+    color: string;
+    id: number;
+};
