@@ -1,7 +1,7 @@
 import { Garage } from './garage/garage';
 
 const garage = new Garage();
-garage.init()
+garage.init();
 
-document.body.append(garage.node)
-garage.render();
+document.body.append(garage.node);
+garage.renderCars();

@@ -1,27 +1,30 @@
 import { TCar } from '../general/types';
 import { BaseComponent } from '../baseComponent/baseComponent';
 import { garage } from '../general/quertyString';
+import { createHTMLElement } from '../helpers/helpers';
 
 export class Car extends BaseComponent {
     public carParam: TCar;
-
+    public spanName: HTMLElement;
     constructor(carObj: TCar) {
         super('car');
         this.carParam = carObj;
+        this.spanName = createHTMLElement('span', 'name_car', this.carParam.name);
     }
 
     render() {
         this.node.style.cssText = `background-color:${this.carParam.color};width:50px;height:25px`;
+        this.spanName.innerHTML = this.carParam.name;
     }
 
-    async update(){
-        const resp = await fetch(`${garage}${this.carParam.id}}`);
-        if (resp.status == 200) {
+    async update() {
+        const resp = await fetch(`${garage}/${this.carParam.id}`);
+        if (resp.status === 200) {
             const res = await resp.json();
             this.carParam.color = res.color;
             this.carParam.name = res.name;
         }
-        this.render()
+        this.render();
     }
 
     // innerHTML = `
