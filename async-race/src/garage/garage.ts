@@ -1,12 +1,14 @@
-import { BaseComponent } from '../baseComponent/baseComponent';
-import { Car } from '../car/car';
+import './garage.css';
+import BaseComponent from '../baseComponent/baseComponent';
+import Car from '../car/car';
+import Road from '../road/road';
 import { garage } from '../general/quertyString';
 import { MAX_COUNT_CAR, ERROR_TEXT } from '../general/constants';
 import { TCar } from '../general/types';
 import { createHTMLElement } from '../helpers/helpers';
 
 export class Garage extends BaseComponent {
-    private cars: Car[];
+    private roads: Road[];
 
     private selectedCar: Car;
 
@@ -31,7 +33,7 @@ export class Garage extends BaseComponent {
     constructor() {
         super('garage');
         this.compartmentNum = 1;
-        this.cars = [];
+        this.roads = [];
         this.selectedCar = null;
     }
 
@@ -79,16 +81,13 @@ export class Garage extends BaseComponent {
     }
 
     async renderCars() {
-        this.cars.splice(0);
+        this.roads.splice(0);
         try {
             const resp = await fetch(`${garage}?_page=${this.compartmentNum}&_limit=${MAX_COUNT_CAR}`);
             if (resp.status === 200) {
                 const res = await resp.json();
-                res.forEach((item: TCar) => {
-                    this.createCar(item);
-                });
                 this.carsDiv.innerHTML = '';
-                this.cars.forEach((item) => {
+                res.forEach((item: TCar) => {
                     this.addBox(item);
                 });
             }
@@ -98,27 +97,30 @@ export class Garage extends BaseComponent {
         this.node.append(this.carsDiv);
     }
 
-    addBox = (car:Car) => {
+    addBox = (car: TCar) => {
         const box = createHTMLElement('div', 'box');
-        const wrapBox =  createHTMLElement('div', 'wrapper');
+        const wrapBox = createHTMLElement('div', 'wrapper');
+        const road = new Road();
+        road.init(car)
+        this.roads.push(road);
         const selectCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'select');
         const deleteCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'delete');
-        wrapBox.append(selectCarBtn, deleteCarBtn, car.spanName);
+        wrapBox.append(selectCarBtn, deleteCarBtn, road.starBtn, road.stopBtn,road.car.spanName);
         selectCarBtn.addEventListener('click', () => {
-            this.selectCar(car);
-        })
+            this.selectCar(road.car);
+        });
         deleteCarBtn.addEventListener('click', () => {
-            this.sendDataCarForDelete(car.carParam.id);
-        })
-        box.append(wrapBox,car.node);
+            this.sendDataCarForDelete(road.car.carParam.id);
+        });
+        box.append(wrapBox, road.node);
         this.carsDiv.append(box);
-    }
+    };
 
-    selectCar = (car:Car) => {
+    selectCar = (car: Car) => {
         this.selectedCar = car;
         this.inputUpdateName.value = this.selectedCar.carParam.name;
         this.inputUpdateColor.value = this.selectedCar.carParam.color;
-    }
+    };
 
     sendDataCarForCreate = async () => {
         if (this.inputName.value && this.inputColor.value) {
@@ -134,6 +136,8 @@ export class Garage extends BaseComponent {
                 },
             });
         }
+        this.inputName.value = '';
+        this.inputColor.value = '';
     };
 
     sendDataCarForUpdate = async (idCar: number) => {
@@ -154,6 +158,8 @@ export class Garage extends BaseComponent {
                 await this.selectedCar.update();
             }
         }
+        this.inputUpdateName.value = '';
+        this.inputUpdateColor.value = '';
     };
 
     sendDataCarForDelete = async (idCar: number) => {
@@ -161,9 +167,9 @@ export class Garage extends BaseComponent {
         await this.renderCars();
     };
 
-    createCar(carParam: TCar) {
-        const car = new Car(carParam);
-        car.render();
-        this.cars.push(car);
-    }
+    // createCar(carParam: TCar) {
+    //     const car = new Car(carParam);
+    //     car.render();
+    //     this.cars.push(car);
+    // }
 }

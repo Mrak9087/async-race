@@ -1,11 +1,13 @@
-import { TCar } from '../general/types';
-import { BaseComponent } from '../baseComponent/baseComponent';
-import { garage } from '../general/quertyString';
+import { TCar, TEngine } from '../general/types';
+import BaseComponent from '../baseComponent/baseComponent';
+import { garage, engine } from '../general/quertyString';
 import { createHTMLElement } from '../helpers/helpers';
 
-export class Car extends BaseComponent {
+export default class Car extends BaseComponent {
     public carParam: TCar;
+
     public spanName: HTMLElement;
+
     constructor(carObj: TCar) {
         super('car');
         this.carParam = carObj;
@@ -27,6 +29,29 @@ export class Car extends BaseComponent {
         this.render();
     }
 
+    startEngine = async () => {
+        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=started`,{
+            method: 'PATCH'
+        });
+        const res:TEngine = await resp.json();
+        return res
+    }
+
+    stopEngine = async () => {
+        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=stopped`,{
+            method: 'PATCH'
+        });
+        const res:TEngine = await resp.json();
+        return res
+    }
+
+    drive = async() => {
+        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=drive`,{
+            method: 'PATCH'
+        });
+        return resp.status !== 200 ? { success:false } : {...await resp.json()};
+    }
+    
     // innerHTML = `
     //     <?xml version="1.0" encoding="UTF-8"?>
     //     <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">

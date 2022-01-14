@@ -1,7 +1,7 @@
 // import { INodeElement } from '../generalTypes/general';
 import { createHTMLElement } from '../helpers/helpers';
 
-export class BaseComponent {
+export default class BaseComponent {
     // implements INodeElement
     readonly node: HTMLElement;
 
