@@ -89,11 +89,17 @@ export class Garage extends BaseComponent {
         btnRace.addEventListener('click', () => {
             this.race();
         })
+        const btnReset = createHTMLElement('button', 'btnGen', 'reset');
+        btnReset.addEventListener('click', async () => {
+            this.roads.forEach(async (item) => {
+                await item.stopDriving();
+            })
+        } )
         const btnGenerateCars = createHTMLElement('button', 'btnGen', 'Generate cars');
         btnGenerateCars.addEventListener('click', async () => {
             await this.createCars();
         } )
-        btnPanelWrapper.append(btnRace, btnGenerateCars);
+        btnPanelWrapper.append(btnRace, btnReset, btnGenerateCars);
         this.panel.append(btnPanelWrapper);
     }
 
