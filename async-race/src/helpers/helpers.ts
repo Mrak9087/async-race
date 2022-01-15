@@ -19,3 +19,20 @@ export function getDistanceBetweenElements(a:HTMLElement, b:HTMLElement):number 
     const bCenter = getCenterElement(b);
     return Math.hypot(aCenter.x - bCenter.x, aCenter.y - bCenter.y);
 }
+
+export function getRandomName():string{
+    const models = ['BMW','Mersedes', 'Toyota','Moskvich','Reno','Tesla','Opel','Porshe'];
+    const names = ['Logan', '7', 'CLK', 'Camry', 'Combi','9','Corsa','D89','Cayene'];
+    const model = models[Math.floor(Math.random() * models.length)];
+    const name = names[Math.floor(Math.random() * names.length)];
+    return `${model} ${name}`;
+}
+
+export function getRandomColor():string{
+    const letters = '0123456789ABCDEF';
+    let result = '#';
+    for (let i = 0; i < 6; i++){
+        result += letters[Math.floor(Math.random() * letters.length)];
+    }
+    return result;
+}
