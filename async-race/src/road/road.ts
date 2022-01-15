@@ -1,6 +1,7 @@
 import BaseComponent from '../baseComponent/baseComponent';
 import Car from '../car/car';
 import { TCar } from '../general/types';
+import { enumEngineState } from '../general/enums';
 import { createHTMLElement, getDistanceBetweenElements } from '../helpers/helpers';
 
 export default class Road extends BaseComponent{
@@ -8,6 +9,7 @@ export default class Road extends BaseComponent{
     public car: Car
     public starBtn: HTMLElement;
     public stopBtn: HTMLElement;
+    private idAnim:number;
     constructor() {
         super('road');
     }
@@ -29,35 +31,35 @@ export default class Road extends BaseComponent{
     }
 
     startDriving = async () => {
-        const {velocity, distance} = await this.car.startEngine();
+        const {velocity, distance} = await this.car.startStopEngine(enumEngineState.start);
         const time = Math.round(distance/velocity);
         const objDistance = Math.floor(getDistanceBetweenElements(this.car.node, this.flag))+50;
-        const id = this.animation(this.car, objDistance, time); //animationObj[this.car.carParam.id] = 
-        const { success } = await this.car.drive();//drive(this.car.carParam.id);
-        if (!success) window.cancelAnimationFrame(id);//animationObj[this.car.carParam.id].id
-        //return {success, time, this.car.carParam.id};
+        await this.animation(this.car, objDistance, time); 
+        const success = await this.car.drive();
+        if (!success) {
+            window.cancelAnimationFrame(this.idAnim);
+        }
     }
 
     stopDriving = async () => {
-        await this.car.stopEngine();
+        await this.car.startStopEngine(enumEngineState.stop);
+        window.cancelAnimationFrame(this.idAnim);
         this.car.node.style.transform = 'translateX(0)';
     }
 
-    animation(car:Car, distance:number, animationTime:number):number {
+    animation(car:Car, distance:number, animationTime:number){
         let start = 0;
-        let id = 0;
 
-        function step(timestamp:number){
+        const step = (timestamp:number)=>{
             if (!start) start = timestamp;
             const time = timestamp - start;
             const passed = Math.round(time * (distance / animationTime));
-            car.node.style.transform = `translateX(${Math.min(passed, distance)}px)`;//translateX(124px)
+            car.node.style.transform = `translateX(${Math.min(passed, distance)}px)`;
 
             if (passed < distance){
-                id = window.requestAnimationFrame(step);
+                this.idAnim = window.requestAnimationFrame(step);
             }
         }
-        id = window.requestAnimationFrame(step);
-        return id;
+        this.idAnim = window.requestAnimationFrame(step);
     }
 }

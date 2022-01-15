@@ -1,6 +1,7 @@
 import { TCar, TEngine } from '../general/types';
 import BaseComponent from '../baseComponent/baseComponent';
 import { garage, engine } from '../general/quertyString';
+import { enumEngineState } from '../general/enums';
 import { createHTMLElement } from '../helpers/helpers';
 
 export default class Car extends BaseComponent {
@@ -29,16 +30,8 @@ export default class Car extends BaseComponent {
         this.render();
     }
 
-    startEngine = async () => {
-        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=started`,{
-            method: 'PATCH'
-        });
-        const res:TEngine = await resp.json();
-        return res
-    }
-
-    stopEngine = async () => {
-        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=stopped`,{
+    startStopEngine = async (stateEngin:enumEngineState) => {
+        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=${stateEngin}`,{
             method: 'PATCH'
         });
         const res:TEngine = await resp.json();
@@ -49,7 +42,7 @@ export default class Car extends BaseComponent {
         const resp = await fetch(`${engine}?id=${this.carParam.id}&status=drive`,{
             method: 'PATCH'
         });
-        return resp.status !== 200 ? { success:false } : {...await resp.json()};
+        return resp.status !== 200 ? false : true;
     }
     
     // innerHTML = `
