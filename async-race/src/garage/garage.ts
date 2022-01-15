@@ -3,11 +3,11 @@ import BaseComponent from '../baseComponent/baseComponent';
 import Car from '../car/car';
 import Road from '../road/road';
 import { garage, winners } from '../general/quertyString';
-import { MAX_COUNT_CAR, ERROR_TEXT, MAX_COUNT_GENERATE_CAR} from '../general/constants';
-import { TCar, TStartDriving ,TWinner} from '../general/types';
+import { MAX_COUNT_CAR, ERROR_TEXT, MAX_COUNT_GENERATE_CAR } from '../general/constants';
+import { TCar, TStartDriving, TWinner } from '../general/types';
 import { createHTMLElement, getRandomName, getRandomColor } from '../helpers/helpers';
 
-export class Garage extends BaseComponent {
+export default class Garage extends BaseComponent {
     private roads: Road[];
 
     private selectedCar: Car;
@@ -44,7 +44,7 @@ export class Garage extends BaseComponent {
         this.panel = createHTMLElement('div', 'panel');
         this.addCreatePanel();
         this.addUpdatePanel();
-        this.addButtonsPanel()
+        this.addButtonsPanel();
         this.node.append(this.panel);
     }
 
@@ -88,17 +88,17 @@ export class Garage extends BaseComponent {
         const btnRace = createHTMLElement('button', 'race', 'race');
         btnRace.addEventListener('click', () => {
             this.race();
-        })
+        });
         const btnReset = createHTMLElement('button', 'btnGen', 'reset');
         btnReset.addEventListener('click', async () => {
             this.roads.forEach(async (item) => {
                 await item.stopDriving();
-            })
-        } )
+            });
+        });
         const btnGenerateCars = createHTMLElement('button', 'btnGen', 'Generate cars');
         btnGenerateCars.addEventListener('click', async () => {
             await this.createCars();
-        } )
+        });
         btnPanelWrapper.append(btnRace, btnReset, btnGenerateCars);
         this.panel.append(btnPanelWrapper);
     }
@@ -112,11 +112,10 @@ export class Garage extends BaseComponent {
                 this.generalCount = parseInt(resp.headers.get('X-Total-Count'));
                 this.carsDiv.innerHTML = `<span>Garage(${this.generalCount})</span>
                     <span>Page #${this.compartmentNum}</span>`;
-                
+
                 res.forEach((item: TCar) => {
                     this.addBox(item);
                 });
-                
             }
         } catch (e) {
             throw TypeError(ERROR_TEXT);
@@ -128,11 +127,11 @@ export class Garage extends BaseComponent {
         const box = createHTMLElement('div', 'box');
         const wrapBox = createHTMLElement('div', 'wrapper');
         const road = new Road();
-        road.init(car)
+        road.init(car);
         this.roads.push(road);
         const selectCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'select');
         const deleteCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'delete');
-        wrapBox.append(selectCarBtn, deleteCarBtn, road.car.starBtn, road.car.stopBtn,road.car.spanName);
+        wrapBox.append(selectCarBtn, deleteCarBtn, road.car.starBtn, road.car.stopBtn, road.car.spanName);
         selectCarBtn.addEventListener('click', () => {
             this.selectCar(road.car);
         });
@@ -149,11 +148,11 @@ export class Garage extends BaseComponent {
         this.inputUpdateColor.value = this.selectedCar.carParam.color;
     };
 
-    sendDataCarForCreate = async (name:string , color:string) => {
+    sendDataCarForCreate = async (name: string, color: string) => {
         if (name && color) {
             const dataCar = {
-                name: name,
-                color: color,
+                name,
+                color,
             };
             await fetch(garage, {
                 method: 'POST',
@@ -190,41 +189,40 @@ export class Garage extends BaseComponent {
     };
 
     sendDataCarForDelete = async (idCar: number) => {
-        const resp = await fetch(`${garage}/${idCar}`, { method: 'DELETE' });
+        await fetch(`${garage}/${idCar}`, { method: 'DELETE' });
         await this.renderCars();
     };
 
     race = async () => {
-        const promises = this.roads.map((item) => item.startDriving())
+        const promises = this.roads.map((item) => item.startDriving());
         const winner = await this.raceAll(promises);
         console.log(winner);
-    }
+    };
 
-    raceAll = async (promises:Promise<TStartDriving>[]) => {
+    raceAll = async (promises: Promise<TStartDriving>[]) => {
         const winner = await Promise.race(promises);
-        if (!winner.success){
+        if (!winner.success) {
             const failedId = this.roads.findIndex((item) => winner.carParam.id === item.car.carParam.id);
-            const restPromises = [...promises.slice(0,failedId), ...promises.slice(failedId+1)]
+            const restPromises = [...promises.slice(0, failedId), ...promises.slice(failedId + 1)];
             this.raceAll(restPromises);
         } else {
             console.log(winner);
             await this.saveWinner({
-                id:winner.carParam.id,
-                wins:1,
-                time: winner.time/100
+                id: winner.carParam.id,
+                wins: 1,
+                time: winner.time / 100,
             });
-            
         }
-    }
+    };
 
-    createCars = async() => {
-        for (let i = 0; i < MAX_COUNT_GENERATE_CAR; i++){
+    createCars = async () => {
+        for (let i = 0; i < MAX_COUNT_GENERATE_CAR; i++) {
             const name = getRandomName();
             const color = getRandomColor();
-            await this.sendDataCarForCreate(name,color);
+            this.sendDataCarForCreate(name, color);
         }
         await this.renderCars();
-    }
+    };
 
     createWinner = async (winner: TWinner) => {
         await fetch(winners, {
@@ -240,8 +238,8 @@ export class Garage extends BaseComponent {
         await fetch(`${winners}/${winner.id}`, {
             method: 'PUT',
             body: JSON.stringify({
-                wins:winner.wins,
-                time:winner.time
+                wins: winner.wins,
+                time: winner.time,
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -249,20 +247,20 @@ export class Garage extends BaseComponent {
         });
     }
 
-    getWinner = async (id:number) => {
-        return await fetch(`${winners}/${id}`)
+    getWinner = async (id: number) => {
+        return fetch(`${winners}/${id}`);
     }
 
-    saveWinner = async (body:TWinner) => {
+    saveWinner = async (body: TWinner) => {
         const winner = await this.getWinner(body.id);
 
         if (winner.status === 404) {
             await this.createWinner(body);
         } else {
-            const res:TWinner = await winner.json();
+            const res: TWinner = await winner.json();
             res.wins++;
-            res.time = res.time < body.time ? res.time: body.time;
-            await this.updateWinner(res)
+            res.time = res.time < body.time ? res.time : body.time;
+            await this.updateWinner(res);
         }
-    }
+    };
 }

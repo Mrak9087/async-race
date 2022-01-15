@@ -1,14 +1,16 @@
 import { TCar, TEngine } from '../general/types';
 import BaseComponent from '../baseComponent/baseComponent';
 import { garage, engine } from '../general/quertyString';
-import { enumEngineState } from '../general/enums';
+import EnumEngineState from '../general/enums';
 import { createHTMLElement } from '../helpers/helpers';
 
 export default class Car extends BaseComponent {
     public carParam: TCar;
 
     public spanName: HTMLElement;
+
     public starBtn: HTMLButtonElement;
+
     public stopBtn: HTMLButtonElement;
 
     constructor(carObj: TCar) {
@@ -34,30 +36,29 @@ export default class Car extends BaseComponent {
         this.render();
     }
 
-    startStopEngine = async (stateEngin:enumEngineState) => {
-        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=${stateEngin}`,{
-            method: 'PATCH'
+    startStopEngine = async (stateEngin: EnumEngineState) => {
+        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=${stateEngin}`, {
+            method: 'PATCH',
         });
-        const res:TEngine = await resp.json();
-        switch (stateEngin){
-            case enumEngineState.start:
+        const res: TEngine = await resp.json();
+        switch (stateEngin) {
+            case EnumEngineState.start:
                 this.starBtn.disabled = true;
                 break;
-            case enumEngineState.stop:
+            case EnumEngineState.stop:
                 this.starBtn.disabled = false;
                 break;
-
         }
-        return res
-    }
+        return res;
+    };
 
-    drive = async() => {
-        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=drive`,{
-            method: 'PATCH'
+    drive = async () => {
+        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=drive`, {
+            method: 'PATCH',
         });
-        return resp.status !== 200 ? false : true;
-    }
-     
+        return resp.status === 200;
+    };
+
     // innerHTML = `
     //     <?xml version="1.0" encoding="UTF-8"?>
     //     <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">

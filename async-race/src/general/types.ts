@@ -6,22 +6,22 @@ export type TCar = {
 
 export type TWinner = {
     id: number;
-    wins:number;
-    time:number;
+    wins: number;
+    time: number;
 };
 
 export type TCenter = {
-    x: number,
-    y: number
-}
+    x: number;
+    y: number;
+};
 
 export type TEngine = {
-    velocity: number,
-    distance: number
-}
+    velocity: number;
+    distance: number;
+};
 
 export type TStartDriving = {
-    success: boolean,
-    carParam: TCar,
-    time:number
-}
+    success: boolean;
+    carParam: TCar;
+    time: number;
+};

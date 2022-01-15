@@ -1,4 +1,4 @@
-import { Garage } from './garage/garage';
+import Garage from './garage/garage';
 
 const garage = new Garage();
 garage.init();

@@ -1,4 +1,6 @@
-export enum enumEngineState{
+enum EnumEngineState {
     start = 'started',
-    stop = 'stopped'
+    stop = 'stopped',
 }
+
+export default EnumEngineState;
