@@ -8,11 +8,15 @@ export default class Car extends BaseComponent {
     public carParam: TCar;
 
     public spanName: HTMLElement;
+    public starBtn: HTMLButtonElement;
+    public stopBtn: HTMLButtonElement;
 
     constructor(carObj: TCar) {
         super('car');
         this.carParam = carObj;
         this.spanName = createHTMLElement('span', 'name_car', this.carParam.name);
+        this.starBtn = <HTMLButtonElement>createHTMLElement('button', '', 'A');
+        this.stopBtn = <HTMLButtonElement>createHTMLElement('button', '', 'B');
     }
 
     render() {
@@ -35,6 +39,15 @@ export default class Car extends BaseComponent {
             method: 'PATCH'
         });
         const res:TEngine = await resp.json();
+        switch (stateEngin){
+            case enumEngineState.start:
+                this.starBtn.disabled = true;
+                break;
+            case enumEngineState.stop:
+                this.starBtn.disabled = false;
+                break;
+
+        }
         return res
     }
 
@@ -44,7 +57,7 @@ export default class Car extends BaseComponent {
         });
         return resp.status !== 200 ? false : true;
     }
-    
+     
     // innerHTML = `
     //     <?xml version="1.0" encoding="UTF-8"?>
     //     <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">

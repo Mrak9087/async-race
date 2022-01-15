@@ -2,13 +2,13 @@ import BaseComponent from '../baseComponent/baseComponent';
 import Car from '../car/car';
 import { TCar } from '../general/types';
 import { enumEngineState } from '../general/enums';
+import { TStartDriving } from '../general/types';
 import { createHTMLElement, getDistanceBetweenElements } from '../helpers/helpers';
 
 export default class Road extends BaseComponent{
     public flag: HTMLElement;
     public car: Car
-    public starBtn: HTMLElement;
-    public stopBtn: HTMLElement;
+    
     private idAnim:number;
     constructor() {
         super('road');
@@ -18,19 +18,18 @@ export default class Road extends BaseComponent{
         this.car = new Car(carParam);
         this.car.render();
         this.flag = createHTMLElement('div', 'flag');
-        this.starBtn = createHTMLElement('button', '', 'A');
-        this.stopBtn = createHTMLElement('button', '', 'B');
-        this.starBtn.addEventListener('click', () =>{
+        
+        this.car.starBtn.addEventListener('click', () =>{
             this.startDriving();
         });
-        this.stopBtn.addEventListener('click', () =>{
+        this.car.stopBtn.addEventListener('click', () =>{
             this.stopDriving();
         });
         this.node.append(this.car.node, this.flag);
 
     }
 
-    startDriving = async () => {
+    startDriving = async ():Promise<TStartDriving> => {
         const {velocity, distance} = await this.car.startStopEngine(enumEngineState.start);
         const time = Math.round(distance/velocity);
         const objDistance = Math.floor(getDistanceBetweenElements(this.car.node, this.flag))+50;
@@ -39,6 +38,9 @@ export default class Road extends BaseComponent{
         if (!success) {
             window.cancelAnimationFrame(this.idAnim);
         }
+
+        let carParam = this.car.carParam;
+        return {success, carParam, time};
     }
 
     stopDriving = async () => {

@@ -13,3 +13,9 @@ export type TEngine = {
     velocity: number,
     distance: number
 }
+
+export type TStartDriving = {
+    success: boolean,
+    carParam: TCar,
+    time:number
+}

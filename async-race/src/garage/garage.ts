@@ -4,7 +4,7 @@ import Car from '../car/car';
 import Road from '../road/road';
 import { garage } from '../general/quertyString';
 import { MAX_COUNT_CAR, ERROR_TEXT } from '../general/constants';
-import { TCar } from '../general/types';
+import { TCar, TStartDriving } from '../general/types';
 import { createHTMLElement } from '../helpers/helpers';
 
 export class Garage extends BaseComponent {
@@ -42,6 +42,7 @@ export class Garage extends BaseComponent {
         this.panel = createHTMLElement('div', 'panel');
         this.addCreatePanel();
         this.addUpdatePanel();
+        this.addButtonsPanel()
         this.node.append(this.panel);
     }
 
@@ -80,6 +81,16 @@ export class Garage extends BaseComponent {
         this.panel.append(createPanelWrapper);
     }
 
+    addButtonsPanel() {
+        const btnPanelWrapper = createHTMLElement('div', 'wrapper');
+        const btnRace = <HTMLButtonElement>createHTMLElement('button', 'race', 'race');
+        btnRace.addEventListener('click', () => {
+            this.race();
+        })
+        btnPanelWrapper.append(btnRace);
+        this.panel.append(btnPanelWrapper);
+    }
+
     async renderCars() {
         this.roads.splice(0);
         try {
@@ -105,7 +116,7 @@ export class Garage extends BaseComponent {
         this.roads.push(road);
         const selectCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'select');
         const deleteCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'delete');
-        wrapBox.append(selectCarBtn, deleteCarBtn, road.starBtn, road.stopBtn,road.car.spanName);
+        wrapBox.append(selectCarBtn, deleteCarBtn, road.car.starBtn, road.car.stopBtn,road.car.spanName);
         selectCarBtn.addEventListener('click', () => {
             this.selectCar(road.car);
         });
@@ -166,6 +177,21 @@ export class Garage extends BaseComponent {
         const resp = await fetch(`${garage}/${idCar}`, { method: 'DELETE' });
         await this.renderCars();
     };
+
+    race = async () => {
+        const promises = this.roads.map((item) => item.startDriving())
+        const winner = await this.raceAll(promises);
+        console.log(winner);
+    }
+
+    raceAll = async (promises:Promise<TStartDriving>[]) => {
+        const winner = await Promise.race(promises);
+        if (!winner.success){
+            const failedId = this.roads.findIndex((item) => winner.carParam.id === item.car.carParam.id);
+            const restPromises = [...promises.slice(0,failedId), ...promises.slice(failedId+1)]
+            this.raceAll(restPromises);
+        } else console.log(winner);
+    }
 
     // createCar(carParam: TCar) {
     //     const car = new Car(carParam);
