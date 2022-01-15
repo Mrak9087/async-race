@@ -3,9 +3,9 @@ import BaseComponent from '../baseComponent/baseComponent';
 import Car from '../car/car';
 import Road from '../road/road';
 import { garage } from '../general/quertyString';
-import { MAX_COUNT_CAR, ERROR_TEXT } from '../general/constants';
+import { MAX_COUNT_CAR, ERROR_TEXT, MAX_COUNT_GENERATE_CAR} from '../general/constants';
 import { TCar, TStartDriving } from '../general/types';
-import { createHTMLElement } from '../helpers/helpers';
+import { createHTMLElement, getRandomName, getRandomColor } from '../helpers/helpers';
 
 export class Garage extends BaseComponent {
     private roads: Road[];
@@ -13,6 +13,8 @@ export class Garage extends BaseComponent {
     private selectedCar: Car;
 
     private compartmentNum: number;
+
+    private generalCount: number;
 
     private panel: HTMLElement;
 
@@ -55,7 +57,7 @@ export class Garage extends BaseComponent {
         this.btnCreateCar = <HTMLButtonElement>createHTMLElement('button', 'carName', 'create');
         this.btnCreateCar.type = 'button';
         this.btnCreateCar.addEventListener('click', async () => {
-            await this.sendDataCarForCreate();
+            await this.sendDataCarForCreate(this.inputName.value, this.inputColor.value);
             await this.renderCars();
             this.inputName.value = '';
         });
@@ -83,11 +85,15 @@ export class Garage extends BaseComponent {
 
     addButtonsPanel() {
         const btnPanelWrapper = createHTMLElement('div', 'wrapper');
-        const btnRace = <HTMLButtonElement>createHTMLElement('button', 'race', 'race');
+        const btnRace = createHTMLElement('button', 'race', 'race');
         btnRace.addEventListener('click', () => {
             this.race();
         })
-        btnPanelWrapper.append(btnRace);
+        const btnGenerateCars = createHTMLElement('button', 'btnGen', 'Generate cars');
+        btnGenerateCars.addEventListener('click', async () => {
+            await this.createCars();
+        } )
+        btnPanelWrapper.append(btnRace, btnGenerateCars);
         this.panel.append(btnPanelWrapper);
     }
 
@@ -97,10 +103,14 @@ export class Garage extends BaseComponent {
             const resp = await fetch(`${garage}?_page=${this.compartmentNum}&_limit=${MAX_COUNT_CAR}`);
             if (resp.status === 200) {
                 const res = await resp.json();
-                this.carsDiv.innerHTML = '';
+                this.generalCount = parseInt(resp.headers.get('X-Total-Count'));
+                this.carsDiv.innerHTML = `<span>Garage(${this.generalCount})</span>
+                    <span>Page #${this.compartmentNum}</span>`;
+                
                 res.forEach((item: TCar) => {
                     this.addBox(item);
                 });
+                
             }
         } catch (e) {
             throw TypeError(ERROR_TEXT);
@@ -133,11 +143,11 @@ export class Garage extends BaseComponent {
         this.inputUpdateColor.value = this.selectedCar.carParam.color;
     };
 
-    sendDataCarForCreate = async () => {
-        if (this.inputName.value && this.inputColor.value) {
+    sendDataCarForCreate = async (name:string , color:string) => {
+        if (name && color) {
             const dataCar = {
-                name: this.inputName.value,
-                color: this.inputColor.value,
+                name: name,
+                color: color,
             };
             await fetch(garage, {
                 method: 'POST',
@@ -191,6 +201,15 @@ export class Garage extends BaseComponent {
             const restPromises = [...promises.slice(0,failedId), ...promises.slice(failedId+1)]
             this.raceAll(restPromises);
         } else console.log(winner);
+    }
+
+    createCars = async() => {
+        for (let i = 0; i < MAX_COUNT_GENERATE_CAR; i++){
+            const name = getRandomName();
+            const color = getRandomColor();
+            await this.sendDataCarForCreate(name,color);
+        }
+        await this.renderCars();
     }
 
     // createCar(carParam: TCar) {
