@@ -4,6 +4,12 @@ export type TCar = {
     id: number;
 };
 
+export type TWinner = {
+    id: number;
+    wins:number;
+    time:number;
+};
+
 export type TCenter = {
     x: number,
     y: number

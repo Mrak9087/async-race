@@ -2,9 +2,9 @@ import './garage.css';
 import BaseComponent from '../baseComponent/baseComponent';
 import Car from '../car/car';
 import Road from '../road/road';
-import { garage } from '../general/quertyString';
+import { garage, winners } from '../general/quertyString';
 import { MAX_COUNT_CAR, ERROR_TEXT, MAX_COUNT_GENERATE_CAR} from '../general/constants';
-import { TCar, TStartDriving } from '../general/types';
+import { TCar, TStartDriving ,TWinner} from '../general/types';
 import { createHTMLElement, getRandomName, getRandomColor } from '../helpers/helpers';
 
 export class Garage extends BaseComponent {
@@ -200,7 +200,15 @@ export class Garage extends BaseComponent {
             const failedId = this.roads.findIndex((item) => winner.carParam.id === item.car.carParam.id);
             const restPromises = [...promises.slice(0,failedId), ...promises.slice(failedId+1)]
             this.raceAll(restPromises);
-        } else console.log(winner);
+        } else {
+            console.log(winner);
+            await this.saveWinner({
+                id:winner.carParam.id,
+                wins:1,
+                time: winner.time/100
+            });
+            
+        }
     }
 
     createCars = async() => {
@@ -212,9 +220,43 @@ export class Garage extends BaseComponent {
         await this.renderCars();
     }
 
-    // createCar(carParam: TCar) {
-    //     const car = new Car(carParam);
-    //     car.render();
-    //     this.cars.push(car);
-    // }
+    createWinner = async (winner: TWinner) => {
+        await fetch(winners, {
+            method: 'POST',
+            body: JSON.stringify(winner),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+
+    updateWinner = async (winner: TWinner) => {
+        await fetch(`${winners}/${winner.id}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                wins:winner.wins,
+                time:winner.time
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+    }
+
+    getWinner = async (id:number) => {
+        return await fetch(`${winners}/${id}`)
+    }
+
+    saveWinner = async (body:TWinner) => {
+        const winner = await this.getWinner(body.id);
+
+        if (winner.status === 404) {
+            await this.createWinner(body);
+        } else {
+            const res:TWinner = await winner.json();
+            res.wins++;
+            res.time = res.time < body.time ? res.time: body.time;
+            await this.updateWinner(res)
+        }
+    }
 }
