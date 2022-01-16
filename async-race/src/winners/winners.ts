@@ -19,6 +19,8 @@ export default class Winners extends BaseComponent {
 
     private sortCell: string;
 
+    private activeSortCell: HTMLElement;
+
     constructor() {
         super('winners');
         this.table = createHTMLElement('table', 'table_winners');
@@ -60,8 +62,8 @@ export default class Winners extends BaseComponent {
             <thead>
                 <th>Number</th>
                 <th>Name</th>
-                <th class='sorted'>Wins</th>
-                <th class='sorted'>Best time (seconds)</th>
+                <th class='sorted ${this.getSort(this.activeSortCell, 'wins')}'>Wins</th>
+                <th class='sorted ${this.getSort(this.activeSortCell, 'time')}'>Best time (seconds)</th>
             </thead>
         `;
     }
@@ -75,24 +77,36 @@ export default class Winners extends BaseComponent {
 
     handleClickTable(e: Event) {
         const target = <HTMLElement>e.target;
+        if (this.activeSortCell) {
+            this.activeSortCell.classList.remove('desc');
+            this.activeSortCell.classList.remove('asc');
+        }
+        this.activeSortCell = target;
         if (target.innerHTML.indexOf('Wins') > -1) {
-            if (this.sortCell !== 'wins') {
-                this.sortCell = 'wins';
-            } else if (this.sortDir === EnumSortDir.asc) {
-                this.sortDir = EnumSortDir.desc;
-            } else {
-                this.sortDir = EnumSortDir.asc;
-            }
+            this.checkedSort('wins')
         }
         if (target.innerHTML.indexOf('time') > -1) {
-            if (this.sortCell !== 'time') {
-                this.sortCell = 'time';
-            } else if (this.sortDir === EnumSortDir.asc) {
-                this.sortDir = EnumSortDir.desc;
-            } else {
-                this.sortDir = EnumSortDir.asc;
-            }
+            this.checkedSort('time')
         }
         this.renderWinners();
+    }
+
+    checkedSort(sort:string){
+        this.sortCell = sort;
+        if (this.sortDir === EnumSortDir.asc) {
+            this.sortDir = EnumSortDir.desc;
+        } else {
+            this.sortDir = EnumSortDir.asc;
+        }
+    }
+
+    getSort(cell:HTMLElement,checkStr:string):string{
+        if (!cell){
+            return '';
+        }
+        if (this.sortCell === checkStr){
+            return this.sortDir;
+        }
+        return '';
     }
 }

@@ -3,6 +3,14 @@
     flex-direction: column;
 }
 
+.desc::after{
+    content: "↑";
+}
+
+.asc::after{
+    content: "↓";
+}
+
 .table_winners{
     text-align: center;
 }
