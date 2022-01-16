@@ -1,3 +1,4 @@
 export const MAX_COUNT_CAR = 10;
 export const MAX_COUNT_GENERATE_CAR = 100;
+export const MIN_COUNT_PAGE = 1;
 export const ERROR_TEXT = 'Ой что-то пошло не так!';

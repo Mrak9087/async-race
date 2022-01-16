@@ -3,7 +3,7 @@ import BaseComponent from '../baseComponent/baseComponent';
 import Car from '../car/car';
 import Road from '../road/road';
 import { garage, winners } from '../general/quertyString';
-import { MAX_COUNT_CAR, ERROR_TEXT, MAX_COUNT_GENERATE_CAR } from '../general/constants';
+import { MAX_COUNT_CAR, ERROR_TEXT, MAX_COUNT_GENERATE_CAR, MIN_COUNT_PAGE } from '../general/constants';
 import { TCar, TStartDriving, TWinner } from '../general/types';
 import { createHTMLElement, getRandomName, getRandomColor } from '../helpers/helpers';
 
@@ -12,9 +12,11 @@ export default class Garage extends BaseComponent {
 
     private selectedCar: Car;
 
-    private compartmentNum: number;
+    private pageNum: number;
 
     private generalCount: number;
+
+    private pageCount: number;
 
     private panel: HTMLElement;
 
@@ -29,12 +31,14 @@ export default class Garage extends BaseComponent {
     private inputUpdateColor: HTMLInputElement;
 
     private btnUpdateCar: HTMLButtonElement;
+    private btnNext: HTMLButtonElement;
+    private btnPrev: HTMLButtonElement;
 
     public carsDiv: HTMLElement;
 
     constructor() {
         super('garage');
-        this.compartmentNum = 1;
+        this.pageNum = 1;
         this.roads = [];
         this.selectedCar = null;
     }
@@ -45,7 +49,7 @@ export default class Garage extends BaseComponent {
         this.addCreatePanel();
         this.addUpdatePanel();
         this.addButtonsPanel();
-        this.node.append(this.panel);
+        this.node.append(this.panel,this.carsDiv, this.addBottomPanel());
     }
 
     addCreatePanel() {
@@ -103,15 +107,57 @@ export default class Garage extends BaseComponent {
         this.panel.append(btnPanelWrapper);
     }
 
+    addBottomPanel():HTMLElement{
+        const bottomPanel = createHTMLElement('div','bottom_panel');
+        this.btnPrev = <HTMLButtonElement>createHTMLElement('button','btn_bottom', 'prev');
+        this.btnPrev.addEventListener('click', async ()=>{
+            this.pageNum--;
+            if(!this.pageNum){
+                this.pageNum = 1;
+            }
+            await this.renderCars();
+        });
+        this.btnNext = <HTMLButtonElement>createHTMLElement('button','btn_bottom', 'next');
+        this.btnNext.addEventListener('click', async ()=>{
+            this.pageNum++;
+            if(this.pageNum === this.pageCount){
+                this.pageNum = this.pageCount;
+            }
+            await this.renderCars();
+        });
+        bottomPanel.append(this.btnPrev, this.btnNext);
+        return bottomPanel;
+    }
+
+    checkPage(){
+        if (this.pageNum == MIN_COUNT_PAGE){
+            this.btnPrev.disabled = true;
+            this.btnNext.disabled = false;
+        } else if (this.pageNum == this.pageCount){
+            this.btnPrev.disabled = false;
+            this.btnNext.disabled = true;
+        } else if (this.pageCount === MIN_COUNT_PAGE){
+            this.btnPrev.disabled = true;
+            this.btnNext.disabled = true;
+        } else {
+            this.btnPrev.disabled = false;
+            this.btnNext.disabled = false;
+        }
+    }
+
     async renderCars() {
         this.roads.splice(0);
         try {
-            const resp = await fetch(`${garage}?_page=${this.compartmentNum}&_limit=${MAX_COUNT_CAR}`);
+            const resp = await fetch(`${garage}?_page=${this.pageNum}&_limit=${MAX_COUNT_CAR}`);
             if (resp.status === 200) {
                 const res = await resp.json();
                 this.generalCount = parseInt(resp.headers.get('X-Total-Count'));
+                this.pageCount = Math.floor(this.generalCount / MAX_COUNT_CAR);
+                if (this.generalCount % MAX_COUNT_CAR) {
+                    this.pageCount++;
+                }
                 this.carsDiv.innerHTML = `<span>Garage(${this.generalCount})</span>
-                    <span>Page #${this.compartmentNum}</span>`;
+                    <span>Page #${this.pageNum}</span>`;
 
                 res.forEach((item: TCar) => {
                     this.addBox(item);
@@ -120,7 +166,8 @@ export default class Garage extends BaseComponent {
         } catch (e) {
             throw TypeError(ERROR_TEXT);
         }
-        this.node.append(this.carsDiv);
+
+        this.checkPage();
     }
 
     addBox = (car: TCar) => {
