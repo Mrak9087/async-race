@@ -1,0 +1,12 @@
+.win{
+    display: flex;
+    flex-direction: column;
+}
+
+.table_winners{
+    text-align: center;
+}
+
+.sorted{
+    cursor: pointer;
+}

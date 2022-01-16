@@ -1,7 +1,7 @@
 import { TCar, TEngine } from '../general/types';
 import BaseComponent from '../baseComponent/baseComponent';
 import { garage, engine } from '../general/quertyString';
-import EnumEngineState from '../general/enums';
+import { EnumEngineState } from '../general/enums';
 import { createHTMLElement } from '../helpers/helpers';
 
 export default class Car extends BaseComponent {

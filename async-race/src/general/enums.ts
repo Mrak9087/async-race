@@ -3,4 +3,9 @@ enum EnumEngineState {
     stop = 'stopped',
 }
 
-export default EnumEngineState;
+enum EnumSortDir {
+    asc = 'asc',
+    desc = 'desc',
+}
+
+export { EnumEngineState, EnumSortDir };

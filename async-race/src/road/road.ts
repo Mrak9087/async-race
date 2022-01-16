@@ -1,7 +1,7 @@
 import BaseComponent from '../baseComponent/baseComponent';
 import Car from '../car/car';
+import { EnumEngineState } from '../general/enums';
 import { TCar, TStartDriving } from '../general/types';
-import EnumEngineState from '../general/enums';
 
 import { createHTMLElement, getDistanceBetweenElements } from '../helpers/helpers';
 

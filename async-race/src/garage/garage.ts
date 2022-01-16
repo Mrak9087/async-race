@@ -232,7 +232,7 @@ export default class Garage extends BaseComponent {
                 'Content-Type': 'application/json',
             },
         });
-    }
+    };
 
     updateWinner = async (winner: TWinner) => {
         await fetch(`${winners}/${winner.id}`, {
@@ -245,11 +245,11 @@ export default class Garage extends BaseComponent {
                 'Content-Type': 'application/json',
             },
         });
-    }
+    };
 
     getWinner = async (id: number) => {
         return fetch(`${winners}/${id}`);
-    }
+    };
 
     saveWinner = async (body: TWinner) => {
         const winner = await this.getWinner(body.id);
