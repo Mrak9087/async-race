@@ -6,8 +6,9 @@ import { garage, winners } from '../general/quertyString';
 import { MAX_COUNT_CAR, ERROR_TEXT, MAX_COUNT_GENERATE_CAR, MIN_COUNT_PAGE } from '../general/constants';
 import { TCar, TStartDriving, TWinner } from '../general/types';
 import { createHTMLElement, getRandomName, getRandomColor } from '../helpers/helpers';
+import IRender from '../general/inerfaces';
 
-export default class Garage extends BaseComponent {
+export default class Garage extends BaseComponent implements IRender{
     private roads: Road[];
 
     private selectedCar: Car;
@@ -50,6 +51,11 @@ export default class Garage extends BaseComponent {
         this.addUpdatePanel();
         this.addButtonsPanel();
         this.node.append(this.panel,this.carsDiv, this.addBottomPanel());
+    }
+
+    render(){
+        this.renderCars();
+        return this.node;
     }
 
     addCreatePanel() {
