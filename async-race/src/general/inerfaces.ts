@@ -1,3 +1,3 @@
-export default interface IRender{
-    render():HTMLElement;
+export default interface IRender {
+    render(): HTMLElement;
 }

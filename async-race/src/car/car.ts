@@ -48,6 +48,8 @@ export default class Car extends BaseComponent {
             case EnumEngineState.stop:
                 this.starBtn.disabled = false;
                 break;
+            default:
+                break;
         }
         return res;
     };

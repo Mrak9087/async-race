@@ -23,6 +23,9 @@
         "prettier/prettier": "error",
         "react/jsx-filename-extension": "off",
         "import/extensions": "off",
-        "no-plusplus": "off"
+        "no-plusplus": "off",
+        "class-methods-use-this": "off",
+        "radix": "off",
+        "no-param-reassign": "off"
     }
 }

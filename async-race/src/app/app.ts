@@ -4,39 +4,44 @@ import Garage from '../garage/garage';
 import Winners from '../winners/winners';
 import IRender from '../general/inerfaces';
 
+export default class App extends BaseComponent {
+    private btnPanel: HTMLElement;
 
+    private viewPanel: HTMLElement;
 
-export default class App extends BaseComponent{
-    private btnPanel:HTMLElement;
-    private viewPanel:HTMLElement;
-    private garageBtn:HTMLElement;
-    private winnersBtn:HTMLElement;
-    private garage:Garage;
-    private winners:Winners;
-    constructor(){
+    private garageBtn: HTMLElement;
+
+    private winnersBtn: HTMLElement;
+
+    private garage: Garage;
+
+    private winners: Winners;
+
+    constructor() {
         super('app');
     }
 
-    init(){
+    init() {
         this.btnPanel = createHTMLElement('div', 'app_panel');
         this.viewPanel = createHTMLElement('div', 'view_panel');
         this.garageBtn = createHTMLElement('button', 'btn_app', 'garage');
         this.winnersBtn = createHTMLElement('button', 'btn_app', 'winners');
-        this.btnPanel.append(this.garageBtn,this.winnersBtn);
+        this.btnPanel.append(this.garageBtn, this.winnersBtn);
         this.garage = new Garage();
         this.garage.init();
         this.winners = new Winners();
+        this.winners.init();
         this.viewPanel.append(this.garage.render());
-        this.garageBtn.addEventListener('click', ()=>{
+        this.garageBtn.addEventListener('click', () => {
             this.renderElement(this.garage);
-        })
-        this.winnersBtn.addEventListener('click', ()=>{
+        });
+        this.winnersBtn.addEventListener('click', () => {
             this.renderElement(this.winners);
-        })
-        this.node.append(this.btnPanel, this.viewPanel)
+        });
+        this.node.append(this.btnPanel, this.viewPanel);
     }
 
-    renderElement(element:IRender){
+    renderElement(element: IRender) {
         this.viewPanel.innerHTML = '';
         this.viewPanel.append(element.render());
     }

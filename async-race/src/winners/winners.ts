@@ -3,7 +3,7 @@ import BaseComponent from '../baseComponent/baseComponent';
 import { createHTMLElement } from '../helpers/helpers';
 import { garage, winners } from '../general/quertyString';
 import { TWinner, TCar } from '../general/types';
-import { MAX_COUNT_CAR } from '../general/constants';
+import { MAX_COUNT_CAR, MIN_COUNT_PAGE } from '../general/constants';
 import { EnumSortDir } from '../general/enums';
 import IRender from '../general/inerfaces';
 
@@ -11,6 +11,8 @@ export default class Winners extends BaseComponent implements IRender {
     private table: HTMLElement;
 
     private pageNum: number;
+
+    private pageCount: number;
 
     private generalCount: number;
 
@@ -22,16 +24,25 @@ export default class Winners extends BaseComponent implements IRender {
 
     private activeSortCell: HTMLElement;
 
+    private btnNext: HTMLButtonElement;
+
+    private btnPrev: HTMLButtonElement;
+
     constructor() {
         super('winners');
+       
+        this.pageNum = MIN_COUNT_PAGE;
+        this.generalCount = 0;
+        this.sortDir = EnumSortDir.asc;
+    }
+
+    init(){
         this.table = createHTMLElement('table', 'table_winners');
         this.table.addEventListener('click', (e) => {
             this.handleClickTable(e);
         });
         this.winDiv = createHTMLElement('div', 'win');
-        this.pageNum = 1;
-        this.generalCount = 0;
-        this.sortDir = EnumSortDir.asc;
+        this.node.append(this.winDiv, this.addBottomPanel());
     }
 
     render() {
@@ -45,16 +56,24 @@ export default class Winners extends BaseComponent implements IRender {
         this.table.innerHTML = '';
         if (resp.status === 200) {
             const res = await resp.json();
-            this.generalCount = parseInt(resp.headers.get('X-Total-Count'));
+            const cnt = resp.headers.get('X-Total-Count');
+                this.generalCount = parseInt(cnt);
+                this.pageCount = Math.floor(this.generalCount / MAX_COUNT_CAR);
+                if (this.generalCount % MAX_COUNT_CAR) {
+                    this.pageCount++;
+                }
             this.winDiv.innerHTML = `<span>Winners(${this.generalCount})</span>
                 <span>Page #${this.pageNum}</span>`;
+            this.winDiv.append(this.table);
             this.addHeadTable();
             res.forEach((item: TWinner, index: number) => {
                 this.addRow(item, index);
             });
-            this.winDiv.append(this.table);
-            this.node.append(this.winDiv);
+            
+            
         }
+
+        this.checkPage()
     }
 
     addHeadTable() {
@@ -77,22 +96,28 @@ export default class Winners extends BaseComponent implements IRender {
     }
 
     handleClickTable(e: Event) {
-        const target = <HTMLElement>e.target;
+        let target = <HTMLElement>e.target;
+        if (!target.classList.contains('sorted')){
+            return;
+        }
         if (this.activeSortCell) {
             this.activeSortCell.classList.remove('desc');
             this.activeSortCell.classList.remove('asc');
         }
-        this.activeSortCell = target;
+        
         if (target.innerHTML.indexOf('Wins') > -1) {
-            this.checkedSort('wins')
+            this.checkedSort('wins');
+        } else if (target.innerHTML.indexOf('time') > -1) {
+            this.checkedSort('time');
+        } else {
+            this.sortCell = '';
+            target = null;
         }
-        if (target.innerHTML.indexOf('time') > -1) {
-            this.checkedSort('time')
-        }
+        this.activeSortCell = target;
         this.renderWinners();
     }
 
-    checkedSort(sort:string){
+    checkedSort(sort: string) {
         this.sortCell = sort;
         if (this.sortDir === EnumSortDir.asc) {
             this.sortDir = EnumSortDir.desc;
@@ -101,13 +126,51 @@ export default class Winners extends BaseComponent implements IRender {
         }
     }
 
-    getSort(cell:HTMLElement,checkStr:string):string{
-        if (!cell){
+    getSort(cell: HTMLElement, checkStr: string): string {
+        if (!cell) {
             return '';
         }
-        if (this.sortCell === checkStr){
+        if (this.sortCell === checkStr) {
             return this.sortDir;
         }
         return '';
+    }
+
+    addBottomPanel(): HTMLElement {
+        const bottomPanel = createHTMLElement('div', 'bottom_panel');
+        this.btnPrev = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'prev');
+        this.btnPrev.addEventListener('click', async () => {
+            this.pageNum--;
+            if (!this.pageNum) {
+                this.pageNum = 1;
+            }
+            await this.renderWinners();
+        });
+        this.btnNext = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'next');
+        this.btnNext.addEventListener('click', async () => {
+            this.pageNum++;
+            if (this.pageNum === this.pageCount) {
+                this.pageNum = this.pageCount;
+            }
+            await this.renderWinners();
+        });
+        bottomPanel.append(this.btnPrev, this.btnNext);
+        return bottomPanel;
+    }
+
+    checkPage() {
+        if (this.pageNum === MIN_COUNT_PAGE) {
+            this.btnPrev.disabled = true;
+            this.btnNext.disabled = false;
+        } else if (this.pageNum === this.pageCount) {
+            this.btnPrev.disabled = false;
+            this.btnNext.disabled = true;
+        } else if (this.pageCount === MIN_COUNT_PAGE) {
+            this.btnPrev.disabled = true;
+            this.btnNext.disabled = true;
+        } else {
+            this.btnPrev.disabled = false;
+            this.btnNext.disabled = false;
+        }
     }
 }

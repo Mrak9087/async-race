@@ -8,7 +8,7 @@ import { TCar, TStartDriving, TWinner } from '../general/types';
 import { createHTMLElement, getRandomName, getRandomColor } from '../helpers/helpers';
 import IRender from '../general/inerfaces';
 
-export default class Garage extends BaseComponent implements IRender{
+export default class Garage extends BaseComponent implements IRender {
     private roads: Road[];
 
     private selectedCar: Car;
@@ -32,7 +32,9 @@ export default class Garage extends BaseComponent implements IRender{
     private inputUpdateColor: HTMLInputElement;
 
     private btnUpdateCar: HTMLButtonElement;
+
     private btnNext: HTMLButtonElement;
+
     private btnPrev: HTMLButtonElement;
 
     public carsDiv: HTMLElement;
@@ -50,10 +52,10 @@ export default class Garage extends BaseComponent implements IRender{
         this.addCreatePanel();
         this.addUpdatePanel();
         this.addButtonsPanel();
-        this.node.append(this.panel,this.carsDiv, this.addBottomPanel());
+        this.node.append(this.panel, this.carsDiv, this.addBottomPanel());
     }
 
-    render(){
+    render() {
         this.renderCars();
         return this.node;
     }
@@ -113,20 +115,20 @@ export default class Garage extends BaseComponent implements IRender{
         this.panel.append(btnPanelWrapper);
     }
 
-    addBottomPanel():HTMLElement{
-        const bottomPanel = createHTMLElement('div','bottom_panel');
-        this.btnPrev = <HTMLButtonElement>createHTMLElement('button','btn_bottom', 'prev');
-        this.btnPrev.addEventListener('click', async ()=>{
+    addBottomPanel(): HTMLElement {
+        const bottomPanel = createHTMLElement('div', 'bottom_panel');
+        this.btnPrev = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'prev');
+        this.btnPrev.addEventListener('click', async () => {
             this.pageNum--;
-            if(!this.pageNum){
+            if (!this.pageNum) {
                 this.pageNum = 1;
             }
             await this.renderCars();
         });
-        this.btnNext = <HTMLButtonElement>createHTMLElement('button','btn_bottom', 'next');
-        this.btnNext.addEventListener('click', async ()=>{
+        this.btnNext = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'next');
+        this.btnNext.addEventListener('click', async () => {
             this.pageNum++;
-            if(this.pageNum === this.pageCount){
+            if (this.pageNum === this.pageCount) {
                 this.pageNum = this.pageCount;
             }
             await this.renderCars();
@@ -135,14 +137,14 @@ export default class Garage extends BaseComponent implements IRender{
         return bottomPanel;
     }
 
-    checkPage(){
-        if (this.pageNum == MIN_COUNT_PAGE){
+    checkPage() {
+        if (this.pageNum === MIN_COUNT_PAGE) {
             this.btnPrev.disabled = true;
             this.btnNext.disabled = false;
-        } else if (this.pageNum == this.pageCount){
+        } else if (this.pageNum === this.pageCount) {
             this.btnPrev.disabled = false;
             this.btnNext.disabled = true;
-        } else if (this.pageCount === MIN_COUNT_PAGE){
+        } else if (this.pageCount === MIN_COUNT_PAGE) {
             this.btnPrev.disabled = true;
             this.btnNext.disabled = true;
         } else {
@@ -157,7 +159,8 @@ export default class Garage extends BaseComponent implements IRender{
             const resp = await fetch(`${garage}?_page=${this.pageNum}&_limit=${MAX_COUNT_CAR}`);
             if (resp.status === 200) {
                 const res = await resp.json();
-                this.generalCount = parseInt(resp.headers.get('X-Total-Count'));
+                const cnt = resp.headers.get('X-Total-Count');
+                this.generalCount = parseInt(cnt);
                 this.pageCount = Math.floor(this.generalCount / MAX_COUNT_CAR);
                 if (this.generalCount % MAX_COUNT_CAR) {
                     this.pageCount++;
@@ -248,8 +251,7 @@ export default class Garage extends BaseComponent implements IRender{
 
     race = async () => {
         const promises = this.roads.map((item) => item.startDriving());
-        const winner = await this.raceAll(promises);
-        console.log(winner);
+        await this.raceAll(promises);
     };
 
     raceAll = async (promises: Promise<TStartDriving>[]) => {
@@ -259,7 +261,6 @@ export default class Garage extends BaseComponent implements IRender{
             const restPromises = [...promises.slice(0, failedId), ...promises.slice(failedId + 1)];
             this.raceAll(restPromises);
         } else {
-            console.log(winner);
             await this.saveWinner({
                 id: winner.carParam.id,
                 wins: 1,
