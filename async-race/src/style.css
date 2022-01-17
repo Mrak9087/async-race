@@ -1,0 +1,46 @@
+*,html,body{
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+button{
+    padding: 3px 10px;
+    outline: none;
+    cursor: pointer;
+    border: 1px solid gold;
+    background-color: transparent;
+    border-radius: 5px;
+    color: limegreen;
+    transition: all 0.5s ease;
+}
+
+button:hover{
+    transform: scale(1.07);
+}
+
+button:disabled{
+    border-color: grey;
+    color: grey;
+}
+
+button:disabled:hover{
+    transform: none;
+}
+
+input{
+    outline: none;
+    border: 1px solid gold;
+    background-color: transparent;
+    border-radius: 5px;
+    color: limegreen;
+}
+
+input[type="text"]{
+    padding-left: 10px;
+}
+
+.bottom_panel{
+    display: flex;
+    column-gap: 15px;
+}

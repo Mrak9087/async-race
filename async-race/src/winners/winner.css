@@ -1,6 +1,14 @@
+.winners{
+    display: flex;
+    flex-direction: column;
+    row-gap: 15px;
+}
+
 .win{
     display: flex;
     flex-direction: column;
+    row-gap: 15px;
+    color: limegreen;
 }
 
 .desc::after{

@@ -1,3 +1,4 @@
+import './app.css';
 import BaseComponent from '../baseComponent/baseComponent';
 import { createHTMLElement } from '../helpers/helpers';
 import Garage from '../garage/garage';

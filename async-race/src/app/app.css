@@ -1,0 +1,11 @@
+.app{
+    min-height: 100vh;
+    background-color: black;
+    padding: 10px;
+}
+
+.app_panel{
+    padding: 15px;
+    display: flex;
+    column-gap: 20px;
+}
