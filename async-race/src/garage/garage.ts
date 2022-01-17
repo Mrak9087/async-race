@@ -13,11 +13,7 @@ export default class Garage extends BaseComponent implements IRender {
 
     private selectedCar: Car;
 
-    private pageNum: number;
-
     private generalCount: number;
-
-    private pageCount: number;
 
     private panel: HTMLElement;
 
@@ -32,10 +28,6 @@ export default class Garage extends BaseComponent implements IRender {
     private inputUpdateColor: HTMLInputElement;
 
     private btnUpdateCar: HTMLButtonElement;
-
-    private btnNext: HTMLButtonElement;
-
-    private btnPrev: HTMLButtonElement;
 
     public carsDiv: HTMLElement;
 
@@ -52,11 +44,11 @@ export default class Garage extends BaseComponent implements IRender {
         this.addCreatePanel();
         this.addUpdatePanel();
         this.addButtonsPanel();
-        this.node.append(this.panel, this.carsDiv, this.addBottomPanel());
+        this.node.append(this.panel, this.carsDiv, this.addBottomPanel(this));
     }
 
     render() {
-        this.renderCars();
+        this.renderData();
         return this.node;
     }
 
@@ -70,7 +62,7 @@ export default class Garage extends BaseComponent implements IRender {
         this.btnCreateCar.type = 'button';
         this.btnCreateCar.addEventListener('click', async () => {
             await this.sendDataCarForCreate(this.inputName.value, this.inputColor.value);
-            await this.renderCars();
+            await this.renderData();
             this.inputName.value = '';
         });
         createPanelWrapper.append(this.inputName, this.inputColor, this.btnCreateCar);
@@ -115,45 +107,7 @@ export default class Garage extends BaseComponent implements IRender {
         this.panel.append(btnPanelWrapper);
     }
 
-    addBottomPanel(): HTMLElement {
-        const bottomPanel = createHTMLElement('div', 'bottom_panel');
-        this.btnPrev = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'prev');
-        this.btnPrev.addEventListener('click', async () => {
-            this.pageNum--;
-            if (!this.pageNum) {
-                this.pageNum = 1;
-            }
-            await this.renderCars();
-        });
-        this.btnNext = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'next');
-        this.btnNext.addEventListener('click', async () => {
-            this.pageNum++;
-            if (this.pageNum === this.pageCount) {
-                this.pageNum = this.pageCount;
-            }
-            await this.renderCars();
-        });
-        bottomPanel.append(this.btnPrev, this.btnNext);
-        return bottomPanel;
-    }
-
-    checkPage() {
-        if (this.pageNum === MIN_COUNT_PAGE) {
-            this.btnPrev.disabled = true;
-            this.btnNext.disabled = false;
-        } else if (this.pageNum === this.pageCount) {
-            this.btnPrev.disabled = false;
-            this.btnNext.disabled = true;
-        } else if (this.pageCount === MIN_COUNT_PAGE) {
-            this.btnPrev.disabled = true;
-            this.btnNext.disabled = true;
-        } else {
-            this.btnPrev.disabled = false;
-            this.btnNext.disabled = false;
-        }
-    }
-
-    async renderCars() {
+    async renderData() {
         this.roads.splice(0);
         try {
             const resp = await fetch(`${garage}?_page=${this.pageNum}&_limit=${MAX_COUNT_CAR}`);
@@ -246,7 +200,7 @@ export default class Garage extends BaseComponent implements IRender {
 
     sendDataCarForDelete = async (idCar: number) => {
         await fetch(`${garage}/${idCar}`, { method: 'DELETE' });
-        await this.renderCars();
+        await this.renderData();
     };
 
     race = async () => {
@@ -275,7 +229,7 @@ export default class Garage extends BaseComponent implements IRender {
             const color = getRandomColor();
             this.sendDataCarForCreate(name, color);
         }
-        await this.renderCars();
+        await this.renderData();
     };
 
     createWinner = async (winner: TWinner) => {
