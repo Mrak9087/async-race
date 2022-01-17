@@ -31,8 +31,8 @@ button:disabled:hover{
 input{
     outline: none;
     border: 1px solid gold;
-    background-color: transparent;
     border-radius: 5px;
+    background-color: transparent;
     color: limegreen;
 }
 

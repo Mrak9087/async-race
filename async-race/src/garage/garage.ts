@@ -29,7 +29,11 @@ export default class Garage extends BaseComponent implements IRender {
 
     private btnUpdateCar: HTMLButtonElement;
 
-    public carsDiv: HTMLElement;
+    private carsDiv: HTMLElement;
+
+    private winMessageDiv: HTMLElement;
+
+    private textMessageSpan: HTMLElement;
 
     constructor() {
         super('garage');
@@ -41,10 +45,17 @@ export default class Garage extends BaseComponent implements IRender {
     init() {
         this.carsDiv = createHTMLElement('div', 'cars');
         this.panel = createHTMLElement('div', 'panel');
+        this.winMessageDiv = createHTMLElement('div', 'win_message');
+        this.textMessageSpan = createHTMLElement('span', 'text_message');
+        this.winMessageDiv.append(this.textMessageSpan);
+        this.winMessageDiv.addEventListener('click', ()=>{
+            this.winMessageDiv.classList.remove('win_show');
+        })
+
         this.addCreatePanel();
         this.addUpdatePanel();
         this.addButtonsPanel();
-        this.node.append(this.panel, this.carsDiv, this.addBottomPanel(this));
+        this.node.append(this.panel, this.carsDiv, this.addBottomPanel(this), this.winMessageDiv);
     }
 
     render() {
@@ -109,23 +120,26 @@ export default class Garage extends BaseComponent implements IRender {
 
     async renderData() {
         this.roads.splice(0);
+
         try {
             const resp = await fetch(`${garage}?_page=${this.pageNum}&_limit=${MAX_COUNT_CAR}`);
-            if (resp.status === 200) {
-                const res = await resp.json();
-                const cnt = resp.headers.get('X-Total-Count');
-                this.generalCount = parseInt(cnt);
-                this.pageCount = Math.floor(this.generalCount / MAX_COUNT_CAR);
-                if (this.generalCount % MAX_COUNT_CAR) {
-                    this.pageCount++;
-                }
-                this.carsDiv.innerHTML = `<span>Garage(${this.generalCount})</span>
-                    <span>Page #${this.pageNum}</span>`;
 
-                res.forEach((item: TCar) => {
-                    this.addBox(item);
-                });
+            const res = await resp.json();
+            const cnt = resp.headers.get('X-Total-Count');
+            this.generalCount = parseInt(cnt);
+            this.pageCount = Math.floor(this.generalCount / MAX_COUNT_CAR);
+
+            if (this.generalCount % MAX_COUNT_CAR) {
+                this.pageCount++;
             }
+
+            this.carsDiv.innerHTML = `<span>Garage(${this.generalCount})</span>
+                <span>Page #${this.pageNum}</span>`;
+
+            res.forEach((item: TCar) => {
+                this.addBox(item);
+            });
+
         } catch (e) {
             throw TypeError(ERROR_TEXT);
         }
@@ -210,16 +224,20 @@ export default class Garage extends BaseComponent implements IRender {
 
     raceAll = async (promises: Promise<TStartDriving>[]) => {
         const winner = await Promise.race(promises);
+
         if (!winner.success) {
             const failedId = this.roads.findIndex((item) => winner.carParam.id === item.car.carParam.id);
             const restPromises = [...promises.slice(0, failedId), ...promises.slice(failedId + 1)];
             this.raceAll(restPromises);
         } else {
+            this.textMessageSpan.innerHTML = `Winner: ${winner.carParam.name}`
+            this.winMessageDiv.classList.add('win_show');
             await this.saveWinner({
                 id: winner.carParam.id,
                 wins: 1,
                 time: winner.time / 100,
             });
+            
         }
     };
 
