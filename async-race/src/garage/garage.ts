@@ -3,10 +3,10 @@ import BaseComponent from '../baseComponent/baseComponent';
 import Car from '../car/car';
 import Road from '../road/road';
 import { garage, winners } from '../general/quertyString';
-import { MAX_COUNT_CAR, ERROR_TEXT, MAX_COUNT_GENERATE_CAR, MIN_COUNT_PAGE } from '../general/constants';
+import { MAX_COUNT_CAR, ERROR_TEXT, MAX_COUNT_GENERATE_CAR } from '../general/constants';
 import { TCar, TStartDriving, TWinner } from '../general/types';
 import { createHTMLElement, getRandomName, getRandomColor } from '../helpers/helpers';
-import IRender from '../general/inerfaces';
+import IRender from '../general/interfaces';
 
 export default class Garage extends BaseComponent implements IRender {
     private roads: Road[];
@@ -48,9 +48,9 @@ export default class Garage extends BaseComponent implements IRender {
         this.winMessageDiv = createHTMLElement('div', 'win_message');
         this.textMessageSpan = createHTMLElement('span', 'text_message');
         this.winMessageDiv.append(this.textMessageSpan);
-        this.winMessageDiv.addEventListener('click', ()=>{
+        this.winMessageDiv.addEventListener('click', () => {
             this.winMessageDiv.classList.remove('win_show');
-        })
+        });
 
         this.addCreatePanel();
         this.addUpdatePanel();
@@ -100,12 +100,17 @@ export default class Garage extends BaseComponent implements IRender {
 
     addButtonsPanel() {
         const btnPanelWrapper = createHTMLElement('div', 'wrapper');
-        const btnRace = createHTMLElement('button', 'race', 'race');
+        const btnRace = <HTMLButtonElement>createHTMLElement('button', 'race', 'race');
+        const btnReset = <HTMLButtonElement>createHTMLElement('button', 'btnGen', 'reset');
+
         btnRace.addEventListener('click', () => {
+            btnRace.disabled = true;
+            btnReset.disabled = false;
             this.race();
         });
-        const btnReset = createHTMLElement('button', 'btnGen', 'reset');
+
         btnReset.addEventListener('click', async () => {
+            btnRace.disabled = false;
             this.roads.forEach(async (item) => {
                 await item.stopDriving();
             });
@@ -139,7 +144,6 @@ export default class Garage extends BaseComponent implements IRender {
             res.forEach((item: TCar) => {
                 this.addBox(item);
             });
-
         } catch (e) {
             throw TypeError(ERROR_TEXT);
         }
@@ -230,14 +234,13 @@ export default class Garage extends BaseComponent implements IRender {
             const restPromises = [...promises.slice(0, failedId), ...promises.slice(failedId + 1)];
             this.raceAll(restPromises);
         } else {
-            this.textMessageSpan.innerHTML = `Winner: ${winner.carParam.name}`
+            this.textMessageSpan.innerHTML = `Winner: ${winner.carParam.name}`;
             this.winMessageDiv.classList.add('win_show');
             await this.saveWinner({
                 id: winner.carParam.id,
                 wins: 1,
                 time: winner.time / 100,
             });
-            
         }
     };
 

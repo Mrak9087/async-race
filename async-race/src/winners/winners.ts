@@ -5,7 +5,7 @@ import { garage, winners } from '../general/quertyString';
 import { TWinner, TCar } from '../general/types';
 import { MAX_COUNT_CAR, MIN_COUNT_PAGE } from '../general/constants';
 import { EnumSortDir } from '../general/enums';
-import IRender from '../general/inerfaces';
+import IRender from '../general/interfaces';
 
 export default class Winners extends BaseComponent implements IRender {
     private table: HTMLElement;
@@ -125,6 +125,4 @@ export default class Winners extends BaseComponent implements IRender {
         }
         return '';
     }
-
-    
 }

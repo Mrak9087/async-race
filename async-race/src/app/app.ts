@@ -3,7 +3,7 @@ import BaseComponent from '../baseComponent/baseComponent';
 import { createHTMLElement } from '../helpers/helpers';
 import Garage from '../garage/garage';
 import Winners from '../winners/winners';
-import IRender from '../general/inerfaces';
+import IRender from '../general/interfaces';
 
 export default class App extends BaseComponent {
     private btnPanel: HTMLElement;

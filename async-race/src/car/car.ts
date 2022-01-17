@@ -61,5 +61,4 @@ export default class Car extends BaseComponent {
         });
         return resp.status === 200;
     };
-
 }

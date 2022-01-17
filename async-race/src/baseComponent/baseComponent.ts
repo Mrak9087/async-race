@@ -1,20 +1,25 @@
 // import { INodeElement } from '../generalTypes/general';
 import { createHTMLElement } from '../helpers/helpers';
-import IRender from '../general/inerfaces';
+import IRender from '../general/interfaces';
 import { MIN_COUNT_PAGE } from '../general/constants';
 
 export default class BaseComponent {
     // implements INodeElement
     readonly node: HTMLElement;
-    protected pageNum:number;
-    protected pageCount:number;
-    protected btnPrev:HTMLButtonElement;
-    protected btnNext:HTMLButtonElement;
+
+    protected pageNum: number;
+
+    protected pageCount: number;
+
+    protected btnPrev: HTMLButtonElement;
+
+    protected btnNext: HTMLButtonElement;
+
     constructor(className: string, tagName: keyof HTMLElementTagNameMap = 'div') {
         this.node = createHTMLElement(tagName, className);
     }
 
-    addBottomPanel(object:IRender): HTMLElement {
+    addBottomPanel(object: IRender): HTMLElement {
         const bottomPanel = createHTMLElement('div', 'bottom_panel');
         this.btnPrev = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'prev');
         this.btnPrev.addEventListener('click', async () => {
@@ -51,7 +56,7 @@ export default class BaseComponent {
             this.btnNext.disabled = false;
         }
 
-        if ((this.pageNum === this.pageCount) && (this.pageCount === MIN_COUNT_PAGE)){
+        if (this.pageNum === this.pageCount && this.pageCount === MIN_COUNT_PAGE) {
             this.btnPrev.disabled = true;
             this.btnNext.disabled = true;
         }
