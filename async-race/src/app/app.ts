@@ -32,9 +32,9 @@ export default class App extends BaseComponent {
         this.garage.init();
         this.winners = new Winners();
         this.winners.init();
-        this.viewPanel.append(this.garage.render());
+        this.viewPanel.append(this.garage.render(false));
         this.garageBtn.addEventListener('click', () => {
-            this.renderElement(this.garage);
+            this.renderElement(this.garage,true);
         });
         this.winnersBtn.addEventListener('click', () => {
             this.renderElement(this.winners);
@@ -42,8 +42,8 @@ export default class App extends BaseComponent {
         this.node.append(this.btnPanel, this.viewPanel);
     }
 
-    renderElement(element: IRender) {
+    renderElement(element: IRender, isSaveState?:boolean) {
         this.viewPanel.innerHTML = '';
-        this.viewPanel.append(element.render());
+        this.viewPanel.append(element.render(isSaveState));
     }
 }

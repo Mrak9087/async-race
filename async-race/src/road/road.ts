@@ -8,12 +8,18 @@ import { createHTMLElement, getDistanceBetweenElements } from '../helpers/helper
 export default class Road extends BaseComponent {
     public flag: HTMLElement;
 
+    public selectCarBtn: HTMLButtonElement;
+    public deleteCarBtn: HTMLButtonElement;
+    
+
     public car: Car;
 
     private idAnim: number;
 
+    private road: HTMLElement;
+
     constructor() {
-        super('road');
+        super('box');
     }
 
     init(carParam: TCar) {
@@ -27,7 +33,13 @@ export default class Road extends BaseComponent {
         this.car.stopBtn.addEventListener('click', () => {
             this.stopDriving();
         });
-        this.node.append(this.car.node, this.flag);
+        this.road = createHTMLElement('div', 'road');
+        this.selectCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'select');
+        this.deleteCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'delete');
+        const wrapBox = createHTMLElement('div', 'wrapper');
+        wrapBox.append(this.selectCarBtn, this.deleteCarBtn, this.car.starBtn, this.car.stopBtn, this.car.spanName);
+        this.road.append(this.car.node, this.flag);
+        this.node.append(wrapBox, this.road);
     }
 
     startDriving = async (): Promise<TStartDriving> => {

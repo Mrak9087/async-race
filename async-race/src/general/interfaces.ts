@@ -1,4 +1,4 @@
 export default interface IRender {
-    render(): HTMLElement;
+    render(isSaveState?:boolean): HTMLElement;
     renderData(): void;
 }

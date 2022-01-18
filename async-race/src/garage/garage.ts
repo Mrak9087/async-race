@@ -58,8 +58,11 @@ export default class Garage extends BaseComponent implements IRender {
         this.node.append(this.panel, this.carsDiv, this.addBottomPanel(this), this.winMessageDiv);
     }
 
-    render() {
-        this.renderData();
+    render(isSaveState:boolean) {
+        if(!isSaveState){
+             this.renderData();
+        }
+        
         return this.node;
     }
 
@@ -103,10 +106,20 @@ export default class Garage extends BaseComponent implements IRender {
         const btnRace = <HTMLButtonElement>createHTMLElement('button', 'race', 'race');
         const btnReset = <HTMLButtonElement>createHTMLElement('button', 'btnGen', 'reset');
 
-        btnRace.addEventListener('click', () => {
+        btnRace.addEventListener('click', async() => {
             btnRace.disabled = true;
             btnReset.disabled = false;
-            this.race();
+            this.btnNext.disabled = true;
+            this.btnPrev.disabled = true;
+            const winner = await this.race();
+            this.textMessageSpan.innerHTML = `Winner: ${winner.carParam.name}`;
+            this.winMessageDiv.classList.add('win_show');
+            this.btnNext.disabled = false;
+            this.btnPrev.disabled = false;
+            await this.saveWinner({
+                        id: winner.carParam.id,
+                        wins: 1,
+                        time: winner.time / 100,})
         });
 
         btnReset.addEventListener('click', async () => {
@@ -148,27 +161,32 @@ export default class Garage extends BaseComponent implements IRender {
             throw TypeError(ERROR_TEXT);
         }
 
+        this.showRoads();
         this.checkPage();
     }
 
     addBox = (car: TCar) => {
-        const box = createHTMLElement('div', 'box');
-        const wrapBox = createHTMLElement('div', 'wrapper');
+        
         const road = new Road();
         road.init(car);
         this.roads.push(road);
-        const selectCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'select');
-        const deleteCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'delete');
-        wrapBox.append(selectCarBtn, deleteCarBtn, road.car.starBtn, road.car.stopBtn, road.car.spanName);
-        selectCarBtn.addEventListener('click', () => {
+        
+        
+        road.selectCarBtn.addEventListener('click', () => {
             this.selectCar(road.car);
         });
-        deleteCarBtn.addEventListener('click', () => {
+        road.deleteCarBtn.addEventListener('click', () => {
             this.sendDataCarForDelete(road.car.carParam.id);
         });
-        box.append(wrapBox, road.node);
-        this.carsDiv.append(box);
+
+        
     };
+
+    showRoads(){
+        this.roads.forEach((item)=>{
+            this.carsDiv.append(item.node);
+        })
+    }
 
     selectCar = (car: Car) => {
         this.selectedCar = car;
@@ -223,25 +241,22 @@ export default class Garage extends BaseComponent implements IRender {
 
     race = async () => {
         const promises = this.roads.map((item) => item.startDriving());
-        await this.raceAll(promises);
+        const winner = await this.raceAll(promises);
+        return winner;
     };
 
-    raceAll = async (promises: Promise<TStartDriving>[]) => {
+    raceAll = async (promises: Promise<TStartDriving>[]):Promise<TStartDriving> => {
         const winner = await Promise.race(promises);
 
         if (!winner.success) {
+            console.log(winner.success);
             const failedId = this.roads.findIndex((item) => winner.carParam.id === item.car.carParam.id);
             const restPromises = [...promises.slice(0, failedId), ...promises.slice(failedId + 1)];
-            this.raceAll(restPromises);
-        } else {
-            this.textMessageSpan.innerHTML = `Winner: ${winner.carParam.name}`;
-            this.winMessageDiv.classList.add('win_show');
-            await this.saveWinner({
-                id: winner.carParam.id,
-                wins: 1,
-                time: winner.time / 100,
-            });
+            console.log(restPromises);
+            return this.raceAll(restPromises);
         }
+        console.log(winner.success);
+        return winner;
     };
 
     createCars = async () => {
@@ -250,6 +265,7 @@ export default class Garage extends BaseComponent implements IRender {
             const color = getRandomColor();
             this.sendDataCarForCreate(name, color);
         }
+
         await this.renderData();
     };
 
