@@ -50,7 +50,7 @@
 .win_message{
     display: flex;
     justify-content: center;
-    padding-top: 40%;
+    align-items: center;
     position: absolute;
     top: 0;
     left: 0;
