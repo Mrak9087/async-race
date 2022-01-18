@@ -1,6 +1,6 @@
 import './winner.css';
 import BaseComponent from '../baseComponent/baseComponent';
-import { createHTMLElement } from '../helpers/helpers';
+import { createHTMLElement, getCarSvg } from '../helpers/helpers';
 import { garage, winners } from '../general/quertyString';
 import { TWinner, TCar } from '../general/types';
 import { MAX_COUNT_CAR, MIN_COUNT_PAGE } from '../general/constants';
@@ -71,6 +71,7 @@ export default class Winners extends BaseComponent implements IRender {
         this.table.innerHTML = `
             <thead>
                 <th>Number</th>
+                <th>Car</th>
                 <th>Name</th>
                 <th class='sorted ${this.getSort(this.activeSortCell, 'wins')}'>Wins</th>
                 <th class='sorted ${this.getSort(this.activeSortCell, 'time')}'>Best time (seconds)</th>
@@ -81,7 +82,7 @@ export default class Winners extends BaseComponent implements IRender {
     async addRow(winner: TWinner, index: number) {
         const row = createHTMLElement('tr', '');
         const car: TCar = await (await fetch(`${garage}/${winner.id}`)).json();
-        row.innerHTML = `<td>${index + 1}</td><td>${car.name}</td><td>${winner.wins}</td><td>${winner.time}</td>`;
+        row.innerHTML = `<td>${index + 1}</td><td>${getCarSvg(car.color)}</td><td>${car.name}</td><td>${winner.wins}</td><td>${winner.time}</td>`;
         this.table.append(row);
     }
 

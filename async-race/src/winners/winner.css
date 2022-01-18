@@ -11,6 +11,11 @@
     color: limegreen;
 }
 
+td svg{
+    width: 50px;
+    height: 25px;
+}
+
 .desc::after{
     content: "↑";
 }
