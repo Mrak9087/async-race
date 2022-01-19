@@ -82,7 +82,9 @@ export default class Winners extends BaseComponent implements IRender {
     async addRow(winner: TWinner, index: number) {
         const row = createHTMLElement('tr', '');
         const car: TCar = await (await fetch(`${garage}/${winner.id}`)).json();
-        row.innerHTML = `<td>${index + 1}</td><td>${getCarSvg(car.color)}</td><td>${car.name}</td><td>${winner.wins}</td><td>${winner.time}</td>`;
+        row.innerHTML = `<td>${index + 1}</td><td>${getCarSvg(car.color)}</td><td>${car.name}</td><td>${
+            winner.wins
+        }</td><td>${winner.time}</td>`;
         this.table.append(row);
     }
 

@@ -9,8 +9,8 @@ export default class Road extends BaseComponent {
     public flag: HTMLElement;
 
     public selectCarBtn: HTMLButtonElement;
+
     public deleteCarBtn: HTMLButtonElement;
-    
 
     public car: Car;
 
@@ -46,12 +46,11 @@ export default class Road extends BaseComponent {
         const { velocity, distance } = await this.car.startStopEngine(EnumEngineState.start);
         const time = Math.round(distance / velocity);
         const objDistance = Math.floor(getDistanceBetweenElements(this.car.node, this.flag)) + 50;
-        await this.animation(this.car, objDistance, time);
+        this.animation(objDistance, time);
         const success = await this.car.drive();
         if (!success) {
             window.cancelAnimationFrame(this.idAnim);
         }
-
         const { carParam } = this.car;
         return { success, carParam, time };
     };
@@ -62,14 +61,14 @@ export default class Road extends BaseComponent {
         this.car.node.style.transform = 'translateX(0)';
     };
 
-    animation(car: Car, distance: number, animationTime: number) {
+    animation(distance: number, animationTime: number) {
         let start = 0;
 
         const step = (timestamp: number) => {
             if (!start) start = timestamp;
             const time = timestamp - start;
             const passed = Math.round(time * (distance / animationTime));
-            car.node.style.transform = `translateX(${Math.min(passed, distance)}px)`;
+            this.car.node.style.transform = `translateX(${Math.min(passed, distance)}px)`;
 
             if (passed < distance) {
                 this.idAnim = window.requestAnimationFrame(step);

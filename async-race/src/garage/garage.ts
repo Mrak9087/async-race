@@ -58,11 +58,11 @@ export default class Garage extends BaseComponent implements IRender {
         this.node.append(this.panel, this.carsDiv, this.addBottomPanel(this), this.winMessageDiv);
     }
 
-    render(isSaveState:boolean) {
-        if(!isSaveState){
-             this.renderData();
+    render(isSaveState: boolean) {
+        if (!isSaveState) {
+            this.renderData();
         }
-        
+
         return this.node;
     }
 
@@ -106,27 +106,31 @@ export default class Garage extends BaseComponent implements IRender {
         const btnRace = <HTMLButtonElement>createHTMLElement('button', 'race', 'race');
         const btnReset = <HTMLButtonElement>createHTMLElement('button', 'btnGen', 'reset');
 
-        btnRace.addEventListener('click', async() => {
+        btnRace.addEventListener('click', async () => {
             btnRace.disabled = true;
             btnReset.disabled = false;
             this.btnNext.disabled = true;
             this.btnPrev.disabled = true;
             const winner = await this.race();
-            this.textMessageSpan.innerHTML = `Winner: ${winner.carParam.name}`;
+            this.textMessageSpan.innerHTML = winner.carParam.name ? `Winner: ${winner.carParam.name}` : 'Все сломались';
             this.winMessageDiv.classList.add('win_show');
             this.btnNext.disabled = false;
             this.btnPrev.disabled = false;
-            await this.saveWinner({
-                        id: winner.carParam.id,
-                        wins: 1,
-                        time: winner.time / 100,})
+
+            if (winner.success) {
+                await this.saveWinner({
+                    id: winner.carParam.id,
+                    wins: 1,
+                    time: winner.time / 100,
+                });
+            }
         });
 
         btnReset.addEventListener('click', async () => {
-            btnRace.disabled = false;
-            this.roads.forEach(async (item) => {
+            await this.roads.forEach(async (item) => {
                 await item.stopDriving();
             });
+            btnRace.disabled = false;
         });
         const btnGenerateCars = createHTMLElement('button', 'btnGen', 'Generate cars');
         btnGenerateCars.addEventListener('click', async () => {
@@ -166,26 +170,22 @@ export default class Garage extends BaseComponent implements IRender {
     }
 
     addBox = (car: TCar) => {
-        
         const road = new Road();
         road.init(car);
         this.roads.push(road);
-        
-        
+
         road.selectCarBtn.addEventListener('click', () => {
             this.selectCar(road.car);
         });
         road.deleteCarBtn.addEventListener('click', () => {
             this.sendDataCarForDelete(road.car.carParam.id);
         });
-
-        
     };
 
-    showRoads(){
-        this.roads.forEach((item)=>{
+    showRoads() {
+        this.roads.forEach((item) => {
             this.carsDiv.append(item.node);
-        })
+        });
     }
 
     selectCar = (car: Car) => {
@@ -241,21 +241,29 @@ export default class Garage extends BaseComponent implements IRender {
 
     race = async () => {
         const promises = this.roads.map((item) => item.startDriving());
-        const winner = await this.raceAll(promises);
+        const winner = await this.raceAll(
+            promises,
+            this.roads.map((item) => item.car.carParam.id)
+        );
         return winner;
     };
 
-    raceAll = async (promises: Promise<TStartDriving>[]):Promise<TStartDriving> => {
+    raceAll = async (promises: Promise<TStartDriving>[], ids: number[]): Promise<TStartDriving> => {
+        if (!promises.length) {
+            return {
+                success: false,
+                carParam: null,
+                time: 0,
+            };
+        }
         const winner = await Promise.race(promises);
 
         if (!winner.success) {
-            console.log(winner.success);
-            const failedId = this.roads.findIndex((item) => winner.carParam.id === item.car.carParam.id);
+            const failedId = ids.findIndex((item) => winner.carParam.id === item);
             const restPromises = [...promises.slice(0, failedId), ...promises.slice(failedId + 1)];
-            console.log(restPromises);
-            return this.raceAll(restPromises);
+            const restId = [...ids.slice(0, failedId), ...ids.slice(failedId + 1)];
+            return this.raceAll(restPromises, restId);
         }
-        console.log(winner.success);
         return winner;
     };
 
