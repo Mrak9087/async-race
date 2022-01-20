@@ -58,8 +58,8 @@ export default class Winners extends BaseComponent implements IRender {
                 <span>Page #${this.pageNum}</span>`;
             this.winDiv.append(this.table);
             this.addHeadTable();
-            res.forEach((item: TWinner, index: number) => {
-                this.addRow(item, index);
+            res.forEach(async (item: TWinner, index: number) => {
+                await this.addRow(item, index);
             });
         }
 
@@ -90,9 +90,11 @@ export default class Winners extends BaseComponent implements IRender {
 
     handleClickTable(e: Event) {
         let target = <HTMLElement>e.target;
+
         if (!target.classList.contains('sorted')) {
             return;
         }
+
         if (this.activeSortCell) {
             this.activeSortCell.classList.remove('desc');
             this.activeSortCell.classList.remove('asc');
