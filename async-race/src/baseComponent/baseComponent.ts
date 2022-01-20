@@ -1,6 +1,6 @@
 import { createHTMLElement } from '../helpers/helpers';
 import IRender from '../general/interfaces';
-import { MIN_COUNT_PAGE } from '../general/constants';
+import { MIN_COUNT_PAGE, MAX_COUNT_CAR } from '../general/constants';
 
 export default class BaseComponent {
     readonly node: HTMLElement;
@@ -8,6 +8,8 @@ export default class BaseComponent {
     protected pageNum: number;
 
     protected pageCount: number;
+
+    protected generalCount: number;
 
     protected btnPrev: HTMLButtonElement;
 
@@ -57,6 +59,15 @@ export default class BaseComponent {
         if (this.pageNum === this.pageCount && this.pageCount === MIN_COUNT_PAGE) {
             this.btnPrev.disabled = true;
             this.btnNext.disabled = true;
+        }
+    }
+
+    getCountPage(itemCount: number) {
+        this.generalCount = itemCount;
+        this.pageCount = Math.floor(this.generalCount / MAX_COUNT_CAR);
+
+        if (this.generalCount % MAX_COUNT_CAR) {
+            this.pageCount++;
         }
     }
 }

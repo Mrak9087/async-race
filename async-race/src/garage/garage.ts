@@ -13,8 +13,6 @@ export default class Garage extends BaseComponent implements IRender {
 
     private selectedCar: Car;
 
-    private generalCount: number;
-
     private panel: HTMLElement;
 
     private inputName: HTMLInputElement;
@@ -130,7 +128,7 @@ export default class Garage extends BaseComponent implements IRender {
         });
 
         this.btnReset.addEventListener('click', async () => {
-            await this.roads.forEach(async (item) => {
+            this.roads.forEach(async (item) => {
                 await item.stopDriving();
             });
             this.btnRace.disabled = false;
@@ -151,12 +149,8 @@ export default class Garage extends BaseComponent implements IRender {
 
             const res = await resp.json();
             const cnt = resp.headers.get('X-Total-Count');
-            this.generalCount = parseInt(cnt);
-            this.pageCount = Math.floor(this.generalCount / MAX_COUNT_CAR);
 
-            if (this.generalCount % MAX_COUNT_CAR) {
-                this.pageCount++;
-            }
+            this.getCountPage(+cnt);
 
             this.carsDiv.innerHTML = `<span>Garage(${this.generalCount})</span>
                 <span>Page #${this.pageNum}</span>`;
@@ -322,8 +316,8 @@ export default class Garage extends BaseComponent implements IRender {
             await this.createWinner(body);
         } else {
             const res: TWinner = await winner.json();
-            res.wins++;
             res.time = res.time < body.time ? res.time : body.time;
+            res.wins++;
             await this.updateWinner(res);
         }
     };

@@ -3,14 +3,14 @@ import BaseComponent from '../baseComponent/baseComponent';
 import { createHTMLElement, getCarSvg } from '../helpers/helpers';
 import { garage, winners } from '../general/quertyString';
 import { TWinner, TCar } from '../general/types';
-import { MAX_COUNT_CAR, MIN_COUNT_PAGE } from '../general/constants';
+import { MAX_COUNT_CAR, MIN_COUNT_PAGE, ERROR_TEXT } from '../general/constants';
 import { EnumSortDir } from '../general/enums';
 import IRender from '../general/interfaces';
 
 export default class Winners extends BaseComponent implements IRender {
-    private table: HTMLElement;
+    private winnersList: TWinner[];
 
-    private generalCount: number;
+    private table: HTMLElement;
 
     private winDiv: HTMLElement;
 
@@ -22,7 +22,7 @@ export default class Winners extends BaseComponent implements IRender {
 
     constructor() {
         super('winners');
-
+        this.winnersList = [];
         this.pageNum = MIN_COUNT_PAGE;
         this.generalCount = 0;
         this.sortDir = EnumSortDir.asc;
@@ -43,27 +43,30 @@ export default class Winners extends BaseComponent implements IRender {
     }
 
     async renderData() {
-        const order = this.sortCell ? `&_sort=${this.sortCell}&_order=${this.sortDir}` : '';
-        const resp = await fetch(`${winners}?_page=${this.pageNum}&_limit=${MAX_COUNT_CAR}${order}`);
-        this.table.innerHTML = '';
-        if (resp.status === 200) {
+        this.winnersList.splice(0);
+        try {
+            const order = this.sortCell ? `&_sort=${this.sortCell}&_order=${this.sortDir}` : '';
+            const resp = await fetch(`${winners}?_page=${this.pageNum}&_limit=${MAX_COUNT_CAR}${order}`);
+
             const res = await resp.json();
             const cnt = resp.headers.get('X-Total-Count');
-            this.generalCount = parseInt(cnt);
-            this.pageCount = Math.floor(this.generalCount / MAX_COUNT_CAR);
-            if (this.generalCount % MAX_COUNT_CAR) {
-                this.pageCount++;
-            }
+
+            this.getCountPage(+cnt);
+
             this.winDiv.innerHTML = `<span>Winners(${this.generalCount})</span>
                 <span>Page #${this.pageNum}</span>`;
             this.winDiv.append(this.table);
             this.addHeadTable();
-            res.forEach(async (item: TWinner, index: number) => {
-                await this.addRow(item, index);
-            });
-        }
 
-        this.checkPage();
+            res.forEach((item: TWinner) => {
+                this.winnersList.push(item);
+            });
+
+            this.checkPage();
+        } catch (e) {
+            this.table.innerHTML = `<tr>${ERROR_TEXT}<tr/>`;
+        }
+        this.showWinner();
     }
 
     addHeadTable() {
@@ -79,12 +82,20 @@ export default class Winners extends BaseComponent implements IRender {
         `;
     }
 
-    async addRow(winner: TWinner, index: number) {
+    showWinner() {
+        this.addHeadTable();
+        this.winnersList.forEach(async (item, index) => {
+            await this.createTrTable(item, index);
+        });
+    }
+
+    async createTrTable(item: TWinner, index: number) {
         const row = createHTMLElement('tr', '');
-        const car: TCar = await (await fetch(`${garage}/${winner.id}`)).json();
+        const resp = await fetch(`${garage}/${item.id}`);
+        const car: TCar = await resp.json();
         row.innerHTML = `<td>${index + 1}</td><td>${getCarSvg(car.color)}</td><td>${car.name}</td><td>${
-            winner.wins
-        }</td><td>${winner.time}</td>`;
+            item.wins
+        }</td><td>${item.time}</td>`;
         this.table.append(row);
     }
 
