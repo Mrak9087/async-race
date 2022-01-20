@@ -1,10 +1,8 @@
-// import { INodeElement } from '../generalTypes/general';
 import { createHTMLElement } from '../helpers/helpers';
 import IRender from '../general/interfaces';
 import { MIN_COUNT_PAGE } from '../general/constants';
 
 export default class BaseComponent {
-    // implements INodeElement
     readonly node: HTMLElement;
 
     protected pageNum: number;
