@@ -27,12 +27,7 @@ export default class Road extends BaseComponent {
         this.car.render();
         this.flag = createHTMLElement('div', 'flag');
 
-        this.car.starBtn.addEventListener('click', () => {
-            this.startDriving();
-        });
-        this.car.stopBtn.addEventListener('click', () => {
-            this.stopDriving();
-        });
+        
         this.road = createHTMLElement('div', 'road');
         this.selectCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'select');
         this.deleteCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'delete');

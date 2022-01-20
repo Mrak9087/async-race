@@ -29,6 +29,10 @@ export default class Garage extends BaseComponent implements IRender {
 
     private btnUpdateCar: HTMLButtonElement;
 
+    private btnRace: HTMLButtonElement;
+
+    private btnReset: HTMLButtonElement;
+
     private carsDiv: HTMLElement;
 
     private winMessageDiv: HTMLElement;
@@ -50,6 +54,7 @@ export default class Garage extends BaseComponent implements IRender {
         this.winMessageDiv.append(this.textMessageSpan);
         this.winMessageDiv.addEventListener('click', () => {
             this.winMessageDiv.classList.remove('win_show');
+            this.checkPage();
         });
 
         this.addCreatePanel();
@@ -103,19 +108,17 @@ export default class Garage extends BaseComponent implements IRender {
 
     addButtonsPanel() {
         const btnPanelWrapper = createHTMLElement('div', 'wrapper');
-        const btnRace = <HTMLButtonElement>createHTMLElement('button', 'race', 'race');
-        const btnReset = <HTMLButtonElement>createHTMLElement('button', 'btnGen', 'reset');
+        this.btnRace = <HTMLButtonElement>createHTMLElement('button', 'race', 'race');
+        this.btnReset = <HTMLButtonElement>createHTMLElement('button', 'btnGen', 'reset');
 
-        btnRace.addEventListener('click', async () => {
-            btnRace.disabled = true;
-            btnReset.disabled = false;
+        this.btnRace.addEventListener('click', async () => {
+            this.btnRace.disabled = true;
+            this.btnReset.disabled = false;
             this.btnNext.disabled = true;
             this.btnPrev.disabled = true;
             const winner = await this.race();
             this.textMessageSpan.innerHTML = winner.carParam.name ? `Winner: ${winner.carParam.name}` : 'Все сломались';
             this.winMessageDiv.classList.add('win_show');
-            this.btnNext.disabled = false;
-            this.btnPrev.disabled = false;
 
             if (winner.success) {
                 await this.saveWinner({
@@ -126,17 +129,17 @@ export default class Garage extends BaseComponent implements IRender {
             }
         });
 
-        btnReset.addEventListener('click', async () => {
+        this.btnReset.addEventListener('click', async () => {
             await this.roads.forEach(async (item) => {
                 await item.stopDriving();
             });
-            btnRace.disabled = false;
+            this.btnRace.disabled = false;
         });
         const btnGenerateCars = createHTMLElement('button', 'btnGen', 'Generate cars');
         btnGenerateCars.addEventListener('click', async () => {
             await this.createCars();
         });
-        btnPanelWrapper.append(btnRace, btnReset, btnGenerateCars);
+        btnPanelWrapper.append(this.btnRace, this.btnReset, btnGenerateCars);
         this.panel.append(btnPanelWrapper);
     }
 
@@ -179,6 +182,14 @@ export default class Garage extends BaseComponent implements IRender {
         });
         road.deleteCarBtn.addEventListener('click', () => {
             this.sendDataCarForDelete(road.car.carParam.id);
+        });
+        road.car.starBtn.addEventListener('click', () => {
+            this.btnRace.disabled = true;
+            road.startDriving();
+        });
+        road.car.stopBtn.addEventListener('click', async () => {
+            await road.stopDriving();
+            this.btnRace.disabled = false;
         });
     };
 
