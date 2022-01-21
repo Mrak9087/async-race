@@ -2,6 +2,7 @@ import BaseComponent from '../baseComponent/baseComponent';
 import Car from '../car/car';
 import { EnumEngineState } from '../general/enums';
 import { TCar, TStartDriving } from '../general/types';
+import { WIDTH_CAR } from '../general/constants';
 
 import { createHTMLElement, getDistanceBetweenElements } from '../helpers/helpers';
 
@@ -39,7 +40,7 @@ export default class Road extends BaseComponent {
     startDriving = async (): Promise<TStartDriving> => {
         const { velocity, distance } = await this.car.startStopEngine(EnumEngineState.start);
         const time = Math.round(distance / velocity);
-        const objDistance = Math.floor(getDistanceBetweenElements(this.car.node, this.flag)) + 50;
+        const objDistance = Math.floor(getDistanceBetweenElements(this.car.node, this.flag)) + WIDTH_CAR;
         this.animation(objDistance, time);
         const success = await this.car.drive();
         if (!success) {

@@ -84,6 +84,9 @@ export default class Winners extends BaseComponent implements IRender {
 
     async showWinner() {
         this.addHeadTable();
+        // this.winnersList.forEach(async (item, index)=>{
+        //     await this.createTrTable(item, index);
+        // })
         for (let i = 0; i < this.winnersList.length; i++){
             await this.createTrTable(this.winnersList[i], i);
         }
