@@ -23,19 +23,11 @@ export default class BaseComponent {
         const bottomPanel = createHTMLElement('div', 'bottom_panel');
         this.btnPrev = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'prev');
         this.btnPrev.addEventListener('click', async () => {
-            this.pageNum--;
-            if (!this.pageNum) {
-                this.pageNum = 1;
-            }
-            await object.renderData();
+            this.handlePrev(object);
         });
         this.btnNext = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'next');
         this.btnNext.addEventListener('click', async () => {
-            this.pageNum++;
-            if (this.pageNum === this.pageCount) {
-                this.pageNum = this.pageCount;
-            }
-            await object.renderData();
+            this.handleNext(object);
         });
         bottomPanel.append(this.btnPrev, this.btnNext);
         return bottomPanel;
@@ -65,9 +57,27 @@ export default class BaseComponent {
     getCountPage(itemCount: number) {
         this.generalCount = itemCount;
         this.pageCount = Math.floor(this.generalCount / MAX_COUNT_CAR);
-
+        
         if (this.generalCount % MAX_COUNT_CAR) {
             this.pageCount++;
         }
+
+        if (!this.generalCount) this.pageCount = 1;
+    }
+
+    handlePrev = async (object: IRender) => {
+        this.pageNum--;
+            if (!this.pageNum) {
+                this.pageNum = 1;
+            }
+        await object.renderData();
+    }
+
+    handleNext = async (object: IRender) => {
+        this.pageNum++;
+            if (this.pageNum === this.pageCount) {
+                this.pageNum = this.pageCount;
+            }
+        await object.renderData();
     }
 }

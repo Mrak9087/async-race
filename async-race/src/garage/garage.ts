@@ -149,7 +149,6 @@ export default class Garage extends BaseComponent implements IRender {
 
             const res = await resp.json();
             const cnt = resp.headers.get('X-Total-Count');
-
             this.getCountPage(+cnt);
 
             this.carsDiv.innerHTML = `<span>Garage(${this.generalCount})</span>
@@ -162,8 +161,13 @@ export default class Garage extends BaseComponent implements IRender {
             throw TypeError(ERROR_TEXT);
         }
 
-        this.showRoads();
-        this.checkPage();
+        if (!this.roads.length && this.pageNum > 1){
+            this.handlePrev(this);
+        } else {
+            this.showRoads();
+            this.checkPage();
+        }
+        
     }
 
     addBox = (car: TCar) => {
