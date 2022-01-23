@@ -2,7 +2,7 @@ import './winner.css';
 import BaseComponent from '../baseComponent/baseComponent';
 import { createHTMLElement, getCarSvg } from '../helpers/helpers';
 import { garage, winners } from '../general/quertyString';
-import { TWinner, TCar } from '../general/types';
+import { TWinner, TCar, TWinnerDataFull } from '../general/types';
 import { MAX_COUNT_CAR, MIN_COUNT_PAGE, ERROR_TEXT } from '../general/constants';
 import { EnumSortDir } from '../general/enums';
 import IRender from '../general/interfaces';
@@ -84,21 +84,26 @@ export default class Winners extends BaseComponent implements IRender {
 
     async showWinner() {
         this.addHeadTable();
-        // this.winnersList.forEach(async (item, index)=>{
-        //     await this.createTrTable(item, index);
-        // })
-        for (let i = 0; i < this.winnersList.length; i++){
-            await this.createTrTable(this.winnersList[i], i);
+        const dataFullList = await Promise.all(this.winnersList.map(this.getWinnerDataFull))
+        dataFullList.forEach((item,index)=>{
+            this.createTrTable(item,index)
+        })
+    }
+
+    async getWinnerDataFull(winnerData:TWinner):Promise<TWinnerDataFull>{
+        const resp = await fetch(`${garage}/${winnerData.id}`);
+        const car: TCar = await resp.json();
+        return {
+            car:car,
+            winner:winnerData,
         }
     }
 
-    async createTrTable(item: TWinner, index: number) {
+    async createTrTable(item: TWinnerDataFull, index: number) {
         const row = createHTMLElement('tr', '');
-        const resp = await fetch(`${garage}/${item.id}`);
-        const car: TCar = await resp.json();
-        row.innerHTML = `<td>${index + 1}</td><td>${getCarSvg(car.color)}</td><td>${car.name}</td><td>${
-            item.wins
-        }</td><td>${item.time}</td>`;
+        row.innerHTML = `<td>${index + 1}</td><td>${getCarSvg(item.car.color)}</td><td>${item.car.name}</td><td>${
+            item.winner.wins
+        }</td><td>${item.winner.time}</td>`;
         this.table.append(row);
     }
 

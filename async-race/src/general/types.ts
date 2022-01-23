@@ -25,3 +25,8 @@ export type TStartDriving = {
     carParam: TCar;
     time: number;
 };
+
+export type TWinnerDataFull = {
+    car: TCar
+    winner: TWinner;
+};
