@@ -3,7 +3,7 @@ import BaseComponent from '../baseComponent/baseComponent';
 import { createHTMLElement, getCarSvg } from '../helpers/helpers';
 import { garage, winners } from '../general/quertyString';
 import { TWinner, TCar, TWinnerDataFull } from '../general/types';
-import { MAX_COUNT_CAR, MIN_COUNT_PAGE, ERROR_TEXT } from '../general/constants';
+import { MAX_COUNT_WINNER, MIN_COUNT_PAGE, ERROR_TEXT } from '../general/constants';
 import { EnumSortDir } from '../general/enums';
 import IRender from '../general/interfaces';
 
@@ -46,7 +46,7 @@ export default class Winners extends BaseComponent implements IRender {
         this.winnersList.splice(0);
         try {
             const order = this.sortCell ? `&_sort=${this.sortCell}&_order=${this.sortDir}` : '';
-            const resp = await fetch(`${winners}?_page=${this.pageNum}&_limit=${MAX_COUNT_CAR}${order}`);
+            const resp = await fetch(`${winners}?_page=${this.pageNum}&_limit=${MAX_COUNT_WINNER}${order}`);
 
             const res = await resp.json();
             const cnt = resp.headers.get('X-Total-Count');

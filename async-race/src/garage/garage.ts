@@ -113,6 +113,7 @@ export default class Garage extends BaseComponent implements IRender {
         this.btnReset = <HTMLButtonElement>createHTMLElement('button', 'btnGen', 'reset');
 
         this.btnRace.addEventListener('click', async () => {
+            this.btnRace.disabled = true;
             this.buttonsBlockUnblock(true);
             const winner = await this.race();
             this.textMessageSpan.innerHTML = winner.carParam.name ? `Winner: ${winner.carParam.name}` : 'Все сломались';
@@ -174,7 +175,7 @@ export default class Garage extends BaseComponent implements IRender {
     }
 
     buttonsBlockUnblock(isBlock: boolean) {
-        this.btnRace.disabled = isBlock;
+        // this.btnRace.disabled = isBlock;
         this.btnReset.disabled = isBlock;
         this.btnNext.disabled = isBlock;
         this.btnPrev.disabled = isBlock;
