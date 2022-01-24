@@ -101,8 +101,13 @@ input[type="text"]{
 .flag{
     margin-right: 100px;
     height: 50px;
-    width: 4px;
-    background-color: red;
+    width: 50px;
+    background-color: transparent;
+}
+
+.flag svg{
+    width: 100%;
+    height: 100%;
 }
 
 .win_message{
