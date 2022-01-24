@@ -43,7 +43,7 @@ export default class App extends BaseComponent {
         });
         this.footer = createHTMLElement('div', 'footer');
         this.footer.innerHTML = getFooterHTML();
-        this.node.append(this.btnPanel, this.viewPanel,this.footer);
+        this.node.append(this.btnPanel, this.viewPanel, this.footer);
     }
 
     renderElement(element: IRender, isSaveState?: boolean) {

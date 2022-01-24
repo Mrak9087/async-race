@@ -129,9 +129,7 @@ export default class Garage extends BaseComponent implements IRender {
         });
 
         this.btnReset.addEventListener('click', async () => {
-            this.roads.forEach(async (item) => {
-                await item.stopDriving();
-            });
+            await Promise.all(this.roads.map((item) => item.stopDriving()));
             this.btnRace.disabled = false;
         });
         this.btnGenerateCars = <HTMLButtonElement>createHTMLElement('button', 'btnGen', 'Generate cars');
@@ -175,7 +173,6 @@ export default class Garage extends BaseComponent implements IRender {
     }
 
     buttonsBlockUnblock(isBlock: boolean) {
-        // this.btnRace.disabled = isBlock;
         this.btnReset.disabled = isBlock;
         this.btnNext.disabled = isBlock;
         this.btnPrev.disabled = isBlock;
