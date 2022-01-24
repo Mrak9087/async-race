@@ -1,6 +1,6 @@
 import './app.css';
 import BaseComponent from '../baseComponent/baseComponent';
-import { createHTMLElement } from '../helpers/helpers';
+import { createHTMLElement, getFooterHTML } from '../helpers/helpers';
 import Garage from '../garage/garage';
 import Winners from '../winners/winners';
 import IRender from '../general/interfaces';
@@ -13,6 +13,8 @@ export default class App extends BaseComponent {
     private garageBtn: HTMLElement;
 
     private winnersBtn: HTMLElement;
+
+    private footer: HTMLElement;
 
     private garage: Garage;
 
@@ -39,7 +41,9 @@ export default class App extends BaseComponent {
         this.winnersBtn.addEventListener('click', () => {
             this.renderElement(this.winners);
         });
-        this.node.append(this.btnPanel, this.viewPanel);
+        this.footer = createHTMLElement('div', 'footer');
+        this.footer.innerHTML = getFooterHTML();
+        this.node.append(this.btnPanel, this.viewPanel,this.footer);
     }
 
     renderElement(element: IRender, isSaveState?: boolean) {
