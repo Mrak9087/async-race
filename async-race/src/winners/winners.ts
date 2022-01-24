@@ -84,19 +84,19 @@ export default class Winners extends BaseComponent implements IRender {
 
     async showWinner() {
         this.addHeadTable();
-        const dataFullList = await Promise.all(this.winnersList.map(this.getWinnerDataFull))
-        dataFullList.forEach((item,index)=>{
-            this.createTrTable(item,index)
-        })
+        const dataFullList = await Promise.all(this.winnersList.map(this.getWinnerDataFull));
+        dataFullList.forEach((item, index) => {
+            this.createTrTable(item, index);
+        });
     }
 
-    async getWinnerDataFull(winnerData:TWinner):Promise<TWinnerDataFull>{
+    async getWinnerDataFull(winnerData: TWinner): Promise<TWinnerDataFull> {
         const resp = await fetch(`${garage}/${winnerData.id}`);
         const car: TCar = await resp.json();
         return {
-            car:car,
-            winner:winnerData,
-        }
+            car,
+            winner: winnerData,
+        };
     }
 
     async createTrTable(item: TWinnerDataFull, index: number) {

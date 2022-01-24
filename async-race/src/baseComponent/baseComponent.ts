@@ -57,7 +57,7 @@ export default class BaseComponent {
     getCountPage(itemCount: number) {
         this.generalCount = itemCount;
         this.pageCount = Math.floor(this.generalCount / MAX_COUNT_CAR);
-        
+
         if (this.generalCount % MAX_COUNT_CAR) {
             this.pageCount++;
         }
@@ -67,17 +67,17 @@ export default class BaseComponent {
 
     handlePrev = async (object: IRender) => {
         this.pageNum--;
-            if (!this.pageNum) {
-                this.pageNum = 1;
-            }
+        if (!this.pageNum) {
+            this.pageNum = 1;
+        }
         await object.renderData();
-    }
+    };
 
     handleNext = async (object: IRender) => {
         this.pageNum++;
-            if (this.pageNum === this.pageCount) {
-                this.pageNum = this.pageCount;
-            }
+        if (this.pageNum === this.pageCount) {
+            this.pageNum = this.pageCount;
+        }
         await object.renderData();
-    }
+    };
 }

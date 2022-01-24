@@ -3,8 +3,7 @@ import Car from '../car/car';
 import { EnumEngineState } from '../general/enums';
 import { TCar, TStartDriving } from '../general/types';
 import { WIDTH_CAR } from '../general/constants';
-
-import { createHTMLElement, getDistanceBetweenElements } from '../helpers/helpers';
+import { createHTMLElement, getDistanceBetweenElements, getFlagSvg } from '../helpers/helpers';
 
 export default class Road extends BaseComponent {
     public flag: HTMLElement;
@@ -27,7 +26,7 @@ export default class Road extends BaseComponent {
         this.car = new Car(carParam);
         this.car.render();
         this.flag = createHTMLElement('div', 'flag');
-
+        this.flag.innerHTML = getFlagSvg();
         this.road = createHTMLElement('div', 'road');
         this.selectCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'select');
         this.deleteCarBtn = <HTMLButtonElement>createHTMLElement('button', 'btn', 'delete');

@@ -3,7 +3,7 @@ import BaseComponent from '../baseComponent/baseComponent';
 import Car from '../car/car';
 import Road from '../road/road';
 import { garage, winners } from '../general/quertyString';
-import { MAX_COUNT_CAR, ERROR_TEXT, MAX_COUNT_GENERATE_CAR } from '../general/constants';
+import { MAX_COUNT_CAR, MAX_COUNT_GENERATE_CAR } from '../general/constants';
 import { TCar, TStartDriving, TWinner } from '../general/types';
 import { createHTMLElement, getRandomName, getRandomColor } from '../helpers/helpers';
 import IRender from '../general/interfaces';
@@ -158,19 +158,22 @@ export default class Garage extends BaseComponent implements IRender {
                 this.addBox(item);
             });
         } catch (e) {
-            throw TypeError(ERROR_TEXT);
+            this.handleError(e);
         }
 
-        if (!this.roads.length && this.pageNum > 1){
+        if (!this.roads.length && this.pageNum > 1) {
             this.handlePrev(this);
         } else {
             this.showRoads();
             this.checkPage();
         }
-        
     }
 
-    buttonsBlockUnblock(isBlock:boolean){
+    handleError(e: Error) {
+        throw e;
+    }
+
+    buttonsBlockUnblock(isBlock: boolean) {
         this.btnRace.disabled = isBlock;
         this.btnReset.disabled = isBlock;
         this.btnNext.disabled = isBlock;
@@ -178,12 +181,12 @@ export default class Garage extends BaseComponent implements IRender {
         this.btnCreateCar.disabled = isBlock;
         this.btnUpdateCar.disabled = isBlock;
         this.btnGenerateCars.disabled = isBlock;
-        this.roads.forEach((item)=>{
+        this.roads.forEach((item) => {
             item.deleteCarBtn.disabled = isBlock;
             item.selectCarBtn.disabled = isBlock;
             item.car.starBtn.disabled = isBlock;
             item.car.stopBtn.disabled = isBlock;
-        })
+        });
     }
 
     addBox = (car: TCar) => {
@@ -220,41 +223,50 @@ export default class Garage extends BaseComponent implements IRender {
     };
 
     sendDataCarForCreate = async (name: string, color: string) => {
-        if (name && color) {
-            const dataCar = {
-                name,
-                color,
-            };
-            await fetch(garage, {
-                method: 'POST',
-                body: JSON.stringify(dataCar),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+        try {
+            if (name && color) {
+                const dataCar = {
+                    name,
+                    color,
+                };
+                await fetch(garage, {
+                    method: 'POST',
+                    body: JSON.stringify(dataCar),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
+            }
+        } catch (e) {
+            this.handleError(e);
         }
         this.inputName.value = '';
         this.inputColor.value = '';
     };
 
     sendDataCarForUpdate = async (idCar: number) => {
-        if (this.inputUpdateName.value && this.inputUpdateColor.value) {
-            const dataCar = {
-                name: this.inputUpdateName.value,
-                color: this.inputUpdateColor.value,
-            };
-            const resp = await fetch(`${garage}/${idCar}`, {
-                method: 'PUT',
-                body: JSON.stringify(dataCar),
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+        try {
+            if (this.inputUpdateName.value && this.inputUpdateColor.value) {
+                const dataCar = {
+                    name: this.inputUpdateName.value,
+                    color: this.inputUpdateColor.value,
+                };
+                const resp = await fetch(`${garage}/${idCar}`, {
+                    method: 'PUT',
+                    body: JSON.stringify(dataCar),
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                });
 
-            if (resp.status === 200) {
-                await this.selectedCar.update();
+                if (resp.status === 200) {
+                    await this.selectedCar.update();
+                }
             }
+        } catch (e) {
+            this.handleError(e);
         }
+
         this.inputUpdateName.value = '';
         this.inputUpdateColor.value = '';
     };

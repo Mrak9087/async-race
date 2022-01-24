@@ -27,6 +27,6 @@ export type TStartDriving = {
 };
 
 export type TWinnerDataFull = {
-    car: TCar
+    car: TCar;
     winner: TWinner;
 };
