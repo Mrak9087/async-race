@@ -270,8 +270,16 @@ export default class Garage extends BaseComponent implements IRender {
     };
 
     sendDataCarForDelete = async (idCar: number) => {
-        await fetch(`${garage}/${idCar}`, { method: 'DELETE' });
-        await this.renderData();
+        try {
+            await fetch(`${garage}/${idCar}`, { method: 'DELETE' });
+            await fetch(`${winners}/${idCar}`, { method: 'DELETE' })        
+        } catch (e) {
+            throw e;
+        } finally{
+            await this.renderData();
+        }
+        ;
+        
     };
 
     race = async () => {
