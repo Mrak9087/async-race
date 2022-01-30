@@ -6,17 +6,17 @@ import { WIDTH_CAR } from '../general/constants';
 import { createHTMLElement, getDistanceBetweenElements, getFlagSvg } from '../helpers/helpers';
 
 export default class Road extends BaseComponent {
-    public flag: HTMLElement;
+    public flag!: HTMLElement;
 
-    public selectCarBtn: HTMLButtonElement;
+    public selectCarBtn!: HTMLButtonElement;
 
-    public deleteCarBtn: HTMLButtonElement;
+    public deleteCarBtn!: HTMLButtonElement;
 
-    public car: Car;
+    public car!: Car;
 
-    private idAnim: number;
+    private idAnim!: number;
 
-    private road: HTMLElement;
+    private road!: HTMLElement;
 
     constructor() {
         super('box');

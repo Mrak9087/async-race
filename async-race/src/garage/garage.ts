@@ -13,31 +13,31 @@ export default class Garage extends BaseComponent implements IRender {
 
     private selectedCar: Car;
 
-    private panel: HTMLElement;
+    private panel!: HTMLElement;
 
-    private inputName: HTMLInputElement;
+    private inputName!: HTMLInputElement;
 
-    private inputColor: HTMLInputElement;
+    private inputColor!: HTMLInputElement;
 
-    private btnCreateCar: HTMLButtonElement;
+    private btnCreateCar!: HTMLButtonElement;
 
-    private inputUpdateName: HTMLInputElement;
+    private inputUpdateName!: HTMLInputElement;
 
-    private inputUpdateColor: HTMLInputElement;
+    private inputUpdateColor!: HTMLInputElement;
 
-    private btnUpdateCar: HTMLButtonElement;
+    private btnUpdateCar!: HTMLButtonElement;
 
-    private btnRace: HTMLButtonElement;
+    private btnRace!: HTMLButtonElement;
 
-    private btnReset: HTMLButtonElement;
+    private btnReset!: HTMLButtonElement;
 
-    private btnGenerateCars: HTMLButtonElement;
+    private btnGenerateCars!: HTMLButtonElement;
 
-    private carsDiv: HTMLElement;
+    private carsDiv!: HTMLElement;
 
-    private winMessageDiv: HTMLElement;
+    private winMessageDiv!: HTMLElement;
 
-    private textMessageSpan: HTMLElement;
+    private textMessageSpan!: HTMLElement;
 
     constructor() {
         super('garage');
@@ -157,7 +157,7 @@ export default class Garage extends BaseComponent implements IRender {
                 this.addBox(item);
             });
         } catch (e) {
-            this.handleError(e);
+            this.handleError(<Error>e);
         }
 
         if (!this.roads.length && this.pageNum > 1) {
@@ -236,7 +236,7 @@ export default class Garage extends BaseComponent implements IRender {
                 });
             }
         } catch (e) {
-            this.handleError(e);
+            this.handleError(<Error>e);
         }
         this.inputName.value = '';
         this.inputColor.value = '';
@@ -262,7 +262,7 @@ export default class Garage extends BaseComponent implements IRender {
                 }
             }
         } catch (e) {
-            this.handleError(e);
+            this.handleError(<Error>e);
         }
 
         this.inputUpdateName.value = '';
