@@ -25,7 +25,7 @@ const config = {
             app: {
               name: 'chrome',
             },
-          },
+        },
         host: 'localhost',
     },
     plugins: [

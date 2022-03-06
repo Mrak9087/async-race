@@ -21,12 +21,12 @@ export default class BaseComponent {
 
     addBottomPanel(object: IRender): HTMLElement {
         const bottomPanel = createHTMLElement('div', 'bottom_panel');
-        this.btnPrev = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'prev');
-        this.btnPrev.addEventListener('click', async () => {
+        this.btnPrev = createHTMLElement('button', 'btn_bottom', 'prev') as HTMLButtonElement;
+        this.btnPrev.addEventListener('click', () => {
             this.handlePrev(object);
         });
-        this.btnNext = <HTMLButtonElement>createHTMLElement('button', 'btn_bottom', 'next');
-        this.btnNext.addEventListener('click', async () => {
+        this.btnNext = createHTMLElement('button', 'btn_bottom', 'next') as HTMLButtonElement;
+        this.btnNext.addEventListener('click', () => {
             this.handleNext(object);
         });
         bottomPanel.append(this.btnPrev, this.btnNext);
@@ -65,19 +65,19 @@ export default class BaseComponent {
         if (!this.generalCount) this.pageCount = 1;
     }
 
-    handlePrev = async (object: IRender) => {
+    handlePrev = (object: IRender) => {
         this.pageNum--;
         if (!this.pageNum) {
             this.pageNum = 1;
         }
-        await object.renderData();
+        object.renderData();
     };
 
-    handleNext = async (object: IRender) => {
+    handleNext = (object: IRender) => {
         this.pageNum++;
         if (this.pageNum === this.pageCount) {
             this.pageNum = this.pageCount;
         }
-        await object.renderData();
+        object.renderData();
     };
 }
