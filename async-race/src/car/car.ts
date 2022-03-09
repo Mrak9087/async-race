@@ -51,8 +51,7 @@ export default class Car extends BaseComponent {
             console.error(e);
         }
         const res: TEngine = await resp.json();
-        this.starBtn.disabled = stateEngin === EnumEngineState.start
-        this.starBtn.disabled = stateEngin === EnumEngineState.stop
+        this.starBtn.disabled = stateEngin !== EnumEngineState.start
         return res;
     };
 
