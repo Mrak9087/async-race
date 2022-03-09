@@ -91,7 +91,14 @@ export default class Winners extends BaseComponent implements IRender {
     }
 
     async getWinnerDataFull(winnerData: TWinner): Promise<TWinnerDataFull> {
-        const resp = await fetch(`${garage}/${winnerData.id}`);
+        let resp: Response;
+
+        try{
+            resp = await fetch(`${garage}/${winnerData.id}`);
+        } catch(e){
+            console.error(e)
+        }
+        
         const car: TCar = await resp.json();
         return {
             car,

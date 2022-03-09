@@ -319,30 +319,42 @@ export default class Garage extends BaseComponent implements IRender {
     };
 
     createWinner = async (winner: TWinner) => {
-        await fetch(winners, {
-            method: 'POST',
-            body: JSON.stringify(winner),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        try{
+            await fetch(winners, {
+                method: 'POST',
+                body: JSON.stringify(winner),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        } catch (e){
+            console.error(e)
+        }
     };
 
     updateWinner = async (winner: TWinner) => {
-        await fetch(`${winners}/${winner.id}`, {
-            method: 'PUT',
-            body: JSON.stringify({
-                wins: winner.wins,
-                time: winner.time,
-            }),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        });
+        try {
+            await fetch(`${winners}/${winner.id}`, {
+                method: 'PUT',
+                body: JSON.stringify({
+                    wins: winner.wins,
+                    time: winner.time,
+                }),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+        } catch (e){
+            console.error(e);
+        }
     };
 
     getWinner = async (id: number) => {
-        return fetch(`${winners}/${id}`);
+        try{
+            return fetch(`${winners}/${id}`);
+        } catch (e){
+            console.log(e);
+        }
     };
 
     saveWinner = async (body: TWinner) => {

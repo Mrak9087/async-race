@@ -28,19 +28,28 @@ export default class Car extends BaseComponent {
     }
 
     async update() {
-        const resp = await fetch(`${garage}/${this.carParam.id}`);
-        if (resp.status === 200) {
-            const res = await resp.json();
-            this.carParam.color = res.color;
-            this.carParam.name = res.name;
+        try{
+            const resp = await fetch(`${garage}/${this.carParam.id}`);
+            if (resp.status === 200) {
+                const res = await resp.json();
+                this.carParam.color = res.color;
+                this.carParam.name = res.name;
+            }
+        } catch (e){
+            console.error(e)
         }
         this.render();
     }
 
     startStopEngine = async (stateEngin: EnumEngineState) => {
-        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=${stateEngin}`, {
-            method: 'PATCH',
-        });
+        let resp:Response;
+        try{
+            resp = await fetch(`${engine}?id=${this.carParam.id}&status=${stateEngin}`, {
+                method: 'PATCH',
+            });
+        } catch (e){
+            console.error(e);
+        }
         const res: TEngine = await resp.json();
         switch (stateEngin) {
             case EnumEngineState.start:
@@ -56,9 +65,14 @@ export default class Car extends BaseComponent {
     };
 
     drive = async () => {
-        const resp = await fetch(`${engine}?id=${this.carParam.id}&status=drive`, {
-            method: 'PATCH',
-        });
+        let resp: Response;
+        try {
+            resp = await fetch(`${engine}?id=${this.carParam.id}&status=drive`, {
+                method: 'PATCH',
+            });
+        } catch (e){
+            console.error(e)
+        }
         return resp.status === 200;
     };
 }
