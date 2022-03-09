@@ -76,8 +76,8 @@ export default class Winners extends BaseComponent implements IRender {
                 <th>Number</th>
                 <th>Car</th>
                 <th>Name</th>
-                <th class='sorted ${this.getSort(this.activeSortCell, 'wins')}'>Wins</th>
-                <th class='sorted ${this.getSort(this.activeSortCell, 'time')}'>Best time (seconds)</th>
+                <th class='sorted ${this.getSort('wins')}'>Wins</th>
+                <th class='sorted ${this.getSort('time')}'>Best time (seconds)</th>
             </thead>
         `;
     }
@@ -147,10 +147,7 @@ export default class Winners extends BaseComponent implements IRender {
         }
     }
 
-    getSort(cell: HTMLElement, checkStr: string): string {
-        if (!cell) {
-            return '';
-        }
+    getSort(checkStr: string): string {
         if (this.sortCell === checkStr) {
             return this.sortDir;
         }
