@@ -34,6 +34,8 @@ export default class BaseComponent {
     }
 
     checkPage() {
+        this.btnPrev.disabled = true;
+        this.btnNext.disabled = true;
         if (this.pageNum === MIN_COUNT_PAGE) {
             this.btnPrev.disabled = true;
             this.btnNext.disabled = false;
@@ -43,15 +45,7 @@ export default class BaseComponent {
         } else if (this.pageCount === MIN_COUNT_PAGE) {
             this.btnPrev.disabled = true;
             this.btnNext.disabled = true;
-        } else {
-            this.btnPrev.disabled = false;
-            this.btnNext.disabled = false;
-        }
-
-        if (this.pageNum === this.pageCount && this.pageCount === MIN_COUNT_PAGE) {
-            this.btnPrev.disabled = true;
-            this.btnNext.disabled = true;
-        }
+        } 
     }
 
     getCountPage(itemCount: number) {
